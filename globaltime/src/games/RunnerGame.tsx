@@ -14,8 +14,9 @@ export const RunnerGame: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef({ player: { y: GROUND, vy: 0, onGround: true } as Player, obstacles: [] as Obstacle[], score: 0, speed: 4, frame: 0, running: false, dead: false });
   const rafRef = useRef(0);
+  const [_phase, setPhase] = useState<'idle' | 'playing' | 'dead'>('idle');
   const [score, setScore] = useState(0);
-  const [phase, setPhase] = useState<'idle' | 'playing' | 'dead'>('idle');
+  
 
   const draw = useCallback(() => {
     const canvas = canvasRef.current;

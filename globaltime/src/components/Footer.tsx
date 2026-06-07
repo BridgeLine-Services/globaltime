@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Globe, Clock, Gamepad2 } from 'lucide-react';
+import { Globe } from 'lucide-react';
 import { AdSlotComponent } from './AdSlot';
 import { COUNTRIES } from '../data/countries';
 

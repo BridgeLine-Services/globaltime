@@ -1,122 +1,50 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Navbar } from './components/Navbar';
+import { Footer } from './components/Footer';
 
-function App() {
-  const [count, setCount] = useState(0)
+// Eager-load the main pages
+import { HomePage } from './pages/HomePage';
+import { WorldClockPage } from './pages/WorldClockPage';
+import { CountryPage } from './pages/CountryPage';
+import { GamesPage } from './pages/GamesPage';
 
+// Lazy-load games (each is a separate chunk)
+const ReactionGame = lazy(() => import('./games/ReactionGame').then(m => ({ default: m.ReactionGame })));
+const MemoryGame   = lazy(() => import('./games/MemoryGame').then(m => ({ default: m.MemoryGame })));
+const ClickerGame  = lazy(() => import('./games/ClickerGame').then(m => ({ default: m.ClickerGame })));
+const PuzzleGame   = lazy(() => import('./games/PuzzleGame').then(m => ({ default: m.PuzzleGame })));
+const RunnerGame   = lazy(() => import('./games/RunnerGame').then(m => ({ default: m.RunnerGame })));
+
+// Admin panel — lazy + hidden route
+const AdminPanel = lazy(() => import('./pages/AdminPanel').then(m => ({ default: m.AdminPanel })));
+
+const GameFallback = () => (
+  <div className="min-h-screen bg-[#0a0a1a] pt-24 flex items-center justify-center">
+    <div className="text-white/40 text-sm animate-pulse">Loading game…</div>
+  </div>
+);
+
+export default function App() {
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+    <BrowserRouter>
+      <div className="min-h-screen bg-[#0a0a1a]">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/world" element={<WorldClockPage />} />
+          <Route path="/time/:slug" element={<CountryPage />} />
+          <Route path="/games" element={<GamesPage />} />
+          <Route path="/games/reaction" element={<Suspense fallback={<GameFallback />}><ReactionGame /></Suspense>} />
+          <Route path="/games/memory"   element={<Suspense fallback={<GameFallback />}><MemoryGame /></Suspense>} />
+          <Route path="/games/clicker"  element={<Suspense fallback={<GameFallback />}><ClickerGame /></Suspense>} />
+          <Route path="/games/puzzle"   element={<Suspense fallback={<GameFallback />}><PuzzleGame /></Suspense>} />
+          <Route path="/games/runner"   element={<Suspense fallback={<GameFallback />}><RunnerGame /></Suspense>} />
+          {/* Admin: hidden route, not in nav */}
+          <Route path="/x-admin-9f3a" element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
+        </Routes>
+        <Footer />
+      </div>
+    </BrowserRouter>
+  );
 }
-
-export default App

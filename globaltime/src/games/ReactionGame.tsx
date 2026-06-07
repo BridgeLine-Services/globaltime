@@ -1,7 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AdSlotComponent } from '../components/AdSlot';
-import { ArrowLeft, Trophy, Zap } from 'lucide-react';
+import { ArrowLeft, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 type Phase = 'idle' | 'waiting' | 'ready' | 'result' | 'toosoon';

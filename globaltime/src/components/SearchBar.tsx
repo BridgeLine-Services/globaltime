@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
-import { searchCountries, Country } from '../data/countries';
+import { searchCountries, type Country } from '../data/countries';
 import { useNavigate } from 'react-router-dom';
 
 interface SearchBarProps {
@@ -57,7 +57,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelect, placeholder = 'S
 
       {showResults && (
         <div className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-white/20 bg-[#0d0d2b]/95 backdrop-blur-xl overflow-hidden shadow-2xl z-50">
-          {results.map((country, i) => (
+          {results.map((country) => (
             <button
               key={country.slug}
               onClick={() => handleSelect(country)}

@@ -7,7 +7,6 @@ import { COUNTRIES, CONTINENTS } from '../data/countries';
 
 export const WorldClockPage: React.FC = () => {
   const [activeContinent, setActiveContinent] = useState('All');
-  const [searchActive, setSearchActive] = useState(false);
 
   const filtered = activeContinent === 'All'
     ? COUNTRIES

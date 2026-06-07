@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import * as THREE from 'three';
-import { Country } from '../data/countries';
+import { type Country } from '../data/countries';
 
 interface Globe3DProps {
   countries: Country[];
@@ -20,8 +20,6 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const previousMouse = useRef({ x: 0, y: 0 });
   const autoRotate = useRef(true);
   const rotationVelocity = useRef({ x: 0, y: 0.003 });
-  const [hoveredCountry, setHoveredCountry] = useState<Country | null>(null);
-  const [tooltip, setTooltip] = useState({ x: 0, y: 0, visible: false });
 
   const latLngToVector3 = (lat: number, lng: number, radius: number) => {
     const phi = (90 - lat) * (Math.PI / 180);

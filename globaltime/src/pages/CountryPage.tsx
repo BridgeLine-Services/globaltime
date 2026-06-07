@@ -1,7 +1,7 @@
 import React, { useEffect, Suspense, lazy } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Globe, Clock, MapPin, ArrowRight } from 'lucide-react';
+import { ArrowLeft, Globe, MapPin, ArrowRight } from 'lucide-react';
 import { getCountryBySlug, COUNTRIES } from '../data/countries';
 import { LiveClock } from '../components/LiveClock';
 import { CountryCard } from '../components/CountryCard';

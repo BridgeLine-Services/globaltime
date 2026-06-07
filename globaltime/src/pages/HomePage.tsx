@@ -1,13 +1,13 @@
 import React, { useState, Suspense, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Globe, Zap, Gamepad2, TrendingUp, ArrowRight, Search } from 'lucide-react';
+import { Globe, Zap, Gamepad2, TrendingUp, ArrowRight } from 'lucide-react';
 import { SearchBar } from '../components/SearchBar';
 import { LiveClock } from '../components/LiveClock';
 import { CountryCard } from '../components/CountryCard';
 import { AdSlotComponent } from '../components/AdSlot';
 import { COUNTRIES } from '../data/countries';
-import { Country } from '../data/countries';
+import { type Country } from '../data/countries';
 
 const Globe3D = lazy(() => import('../components/Globe3D').then(m => ({ default: m.Globe3D })));
 

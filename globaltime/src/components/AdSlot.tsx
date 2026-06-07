@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAdStore, AdSlot as AdSlotType } from '../stores/adStore';
+import { useAdStore, type AdSlot as AdSlotType } from '../stores/adStore';
 import { useAnalyticsStore } from '../stores/analyticsStore';
 import { ExternalLink } from 'lucide-react';
 
