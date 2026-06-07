@@ -1,13 +1,12 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useLiveClock, useStaticClock } from '../hooks/useLiveClock';
-import { getUTCOffset, isDaytime } from '../utils/time';
 
 interface LiveClockProps {
   timezone: string;
   size?: 'sm' | 'md' | 'lg' | 'xl';
   showDate?: boolean;
-  showMs?: boolean;      // default true for lg/xl, false for sm/md
-  precise?: boolean;     // force RAF mode even at small sizes
+  showMs?: boolean;    // default true for lg/xl, false for sm/md
+  precise?: boolean;   // force RAF mode even at small sizes
   className?: string;
 }
 
@@ -19,69 +18,69 @@ export const LiveClock: React.FC<LiveClockProps> = ({
   precise = false,
   className = '',
 }) => {
-  // Use high-freq RAF clock only when the ms display is actually visible,
-  // otherwise a 1s interval is enough and is far cheaper when many clocks
-  // are on screen at once (World Clock page).
-  const wantsMs = showMs ?? (size === 'lg' || size === 'xl');
+  const wantsMs    = showMs ?? (size === 'lg' || size === 'xl');
   const usePrecise = precise || wantsMs;
 
-  const rafTime = useLiveClock(timezone);
-  const staticTime = useStaticClock(timezone);
-  const time = usePrecise ? rafTime : staticTime;
+  // Both hooks now return isDay + utcOffset + dstTransitioned — no extra
+  // memoization or separate getUTCOffset() call needed anywhere.
+  const rafState    = useLiveClock(timezone);
+  const staticState = useStaticClock(timezone);
+  const time        = usePrecise ? rafState : staticState;
 
-  // UTC offset doesn't change during a session (DST aside), so memoize it.
-  const offset = useMemo(() => getUTCOffset(timezone), [timezone]);
-  const isDay = isDaytime(timezone, time); // reuse snapshot — no extra Intl call
+  // isDay already has hysteresis baked in (computed inside the hook).
+  // utcOffset is freshly derived from each snapshot — always correct after DST.
+  const { isDay, utcOffset, dstTransitioned } = time;
 
-  const sizeClasses = {
-    sm:  'text-lg',
-    md:  'text-3xl',
-    lg:  'text-5xl',
-    xl:  'text-7xl md:text-8xl',
-  } as const;
+  const sizeClasses: Record<string, string> = {
+    sm: 'text-lg',
+    md: 'text-3xl',
+    lg: 'text-5xl',
+    xl: 'text-7xl md:text-8xl',
+  };
 
-  const msSizeClasses = {
-    sm:  'text-sm',
-    md:  'text-xl',
-    lg:  'text-2xl',
-    xl:  'text-3xl md:text-4xl',
-  } as const;
+  const msSizeClasses: Record<string, string> = {
+    sm: 'text-sm',
+    md: 'text-xl',
+    lg: 'text-2xl',
+    xl: 'text-3xl md:text-4xl',
+  };
+
+  // Separator blinks on the actual seconds boundary (not CSS animation,
+  // which would be unsynced to real time).
+  const separatorOpacity = parseInt(time.seconds, 10) % 2 === 0 ? 1 : 0.35;
 
   return (
     <div className={`font-mono ${className}`}>
       <div className={`flex items-baseline gap-0.5 ${sizeClasses[size]} font-bold`}>
-        {/* Hours */}
-        <span className="text-cyan-400">{time.hours}</span>
 
-        {/* Separator — blinks on the seconds boundary */}
+        {/* Hours */}
+        <span className="text-cyan-400 tabular-nums">{time.hours}</span>
+
+        {/* Separator */}
         <span
           className="text-white/60 transition-opacity duration-100"
-          style={{ opacity: parseInt(time.seconds, 10) % 2 === 0 ? 1 : 0.35 }}
-        >
-          :
-        </span>
+          style={{ opacity: separatorOpacity }}
+        >:</span>
 
         {/* Minutes */}
-        <span className="text-white">{time.minutes}</span>
+        <span className="text-white tabular-nums">{time.minutes}</span>
 
         <span
           className="text-white/60 transition-opacity duration-100"
-          style={{ opacity: parseInt(time.seconds, 10) % 2 === 0 ? 1 : 0.35 }}
-        >
-          :
-        </span>
+          style={{ opacity: separatorOpacity }}
+        >:</span>
 
         {/* Seconds */}
-        <span className="text-white/80">{time.seconds}</span>
+        <span className="text-white/80 tabular-nums">{time.seconds}</span>
 
-        {/* Milliseconds — only rendered when requested */}
+        {/* Milliseconds — only when requested */}
         {wantsMs && (
-          <span className={`text-purple-400 ${msSizeClasses[size]} ml-1 tabular-nums`}>
+          <span className={`text-purple-400 tabular-nums ${msSizeClasses[size]} ml-1`}>
             .{time.ms}
           </span>
         )}
 
-        {/* AM/PM badge */}
+        {/* AM/PM */}
         <span className="ml-2 text-white/40 text-sm font-sans font-normal">
           {time.isPM ? 'PM' : 'AM'}
         </span>
@@ -92,8 +91,18 @@ export const LiveClock: React.FC<LiveClockProps> = ({
           <div className="text-white/60 text-sm">
             {time.dayOfWeek}, {time.date}
           </div>
-          <div className="text-cyan-400/60 text-xs">
-            {offset} · {isDay ? '☀️ Day' : '🌙 Night'}
+
+          {/* UTC offset — updates in the same render as the clock jump,
+              and briefly shows a DST badge when it just changed. */}
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-cyan-400/60">{utcOffset}</span>
+            <span className="text-white/40">·</span>
+            <span className="text-white/50">{isDay ? '☀️ Day' : '🌙 Night'}</span>
+            {dstTransitioned && (
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/40 text-amber-300 text-xs animate-pulse">
+                DST
+              </span>
+            )}
           </div>
         </div>
       )}

@@ -2,11 +2,12 @@ import React, { useEffect, Suspense, lazy } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Globe, MapPin, ArrowRight } from 'lucide-react';
+import { useLiveClock } from '../hooks/useLiveClock';
 import { getCountryBySlug, COUNTRIES } from '../data/countries';
 import { LiveClock } from '../components/LiveClock';
 import { CountryCard } from '../components/CountryCard';
 import { AdSlotComponent } from '../components/AdSlot';
-import { getUTCOffset, isDaytime } from '../utils/time';
+
 import { useAnalyticsStore } from '../stores/analyticsStore';
 
 const Globe3D = lazy(() => import('../components/Globe3D').then(m => ({ default: m.Globe3D })));
@@ -25,8 +26,10 @@ export const CountryPage: React.FC = () => {
 
   if (!country) return <Navigate to="/world" replace />;
 
-  const offset = getUTCOffset(country.timezone);
-  const isDay = isDaytime(country.timezone);
+  const { isDay, utcOffset: offset } = useLiveClock(country.timezone);
+
+
+
 
   const related = COUNTRIES
     .filter(c => c.continent === country.continent && c.slug !== country.slug)

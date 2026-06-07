@@ -1,74 +1,165 @@
 import { useState, useEffect, useRef } from 'react';
-import { getTimeInTimezone, type TimeSnapshot } from '../utils/time';
+import { getTimeInTimezone, isDaytimeStable, type TimeSnapshot } from '../utils/time';
 
 // ─── useLiveClock ─────────────────────────────────────────────────────────────
-// Drives a smooth millisecond clock via requestAnimationFrame.
+// High-frequency RAF clock for the main time display (millisecond precision).
 //
-// Key refinements vs. the original:
-//  1. Only triggers a React re-render when the displayed string values actually
-//     change — not on every single animation frame (~60fps would re-render
-//     every component on every frame otherwise).
-//  2. Resets and restarts the RAF loop cleanly when `timezone` changes so we
-//     never get a stale closure reading the old timezone.
-//  3. The RAF callback captures `timezone` via a ref so the closure never goes
-//     stale between renders.
+// DST handling:
+//   • Every snapshot now carries `offsetMinutes`. We watch it in a ref and
+//     fire a "DST transition" event when it changes — no timer needed, just
+//     a comparison on the value already computed during the normal tick.
+//   • The `isDaytime` state uses hysteresis (isDaytimeStable) so the sun/moon
+//     icon doesn't flicker during the ambiguous fall-back hour.
+//   • The UTC offset string is derived fresh from each snapshot, so it updates
+//     in the same render that the clock jumps — no stale badge.
 
-export function useLiveClock(timezone: string): TimeSnapshot {
-  const [snapshot, setSnapshot] = useState<TimeSnapshot>(() => getTimeInTimezone(timezone));
-  const rafRef = useRef<number>(0);
-  const tzRef = useRef<string>(timezone);
-  const prevKeyRef = useRef<string>('');
+export interface LiveClockResult extends TimeSnapshot {
+  isDay: boolean;        // stable day/night flag (hysteresis applied)
+  utcOffset: string;     // "UTC+05:30" — always live, reflects DST
+  dstTransitioned: boolean; // true on the first tick after an offset change
+}
 
-  // Keep tzRef in sync without restarting the loop unnecessarily
+function offsetToString(offsetMinutes: number): string {
+  const sign = offsetMinutes >= 0 ? '+' : '-';
+  const abs  = Math.abs(offsetMinutes);
+  const h    = String(Math.floor(abs / 60)).padStart(2, '0');
+  const m    = String(abs % 60).padStart(2, '0');
+  return `UTC${sign}${h}:${m}`;
+}
+
+export function useLiveClock(timezone: string): LiveClockResult {
+  const [state, setState] = useState<LiveClockResult>(() => {
+    const snap = getTimeInTimezone(timezone);
+    return { ...snap, isDay: snap.hourNum >= 6 && snap.hourNum < 20, utcOffset: offsetToString(snap.offsetMinutes), dstTransitioned: false };
+  });
+
+  const tzRef            = useRef(timezone);
+  const rafRef           = useRef(0);
+  const prevKeyRef       = useRef('');
+  const prevOffsetRef    = useRef(state.offsetMinutes);
+  const isDayRef         = useRef(state.isDay);
+
+  // Keep tzRef in sync; don't restart the RAF loop just because the ref updated.
+  useEffect(() => { tzRef.current = timezone; }, [timezone]);
+
   useEffect(() => {
-    tzRef.current = timezone;
-  }, [timezone]);
-
-  useEffect(() => {
-    // Reset prev key so the first frame after a timezone change always fires
-    prevKeyRef.current = '';
+    // Reset state when timezone prop changes
+    prevKeyRef.current    = '';
+    prevOffsetRef.current = getTimeInTimezone(timezone).offsetMinutes;
+    isDayRef.current      = getTimeInTimezone(timezone).hourNum >= 6 && getTimeInTimezone(timezone).hourNum < 20;
 
     const tick = () => {
-      const next = getTimeInTimezone(tzRef.current);
+      const snap = getTimeInTimezone(tzRef.current);
 
-      // Only re-render when seconds (or ms chunk) visibly change.
-      // We compare HH:MM:SS — milliseconds update every frame so we
-      // throttle them to every ~50ms (3 digits, last digit changes at 10ms
-      // granularity on RAF). Comparing the first 2 ms digits is enough to
-      // keep the display smooth without hammering React's reconciler.
-      const key = `${next.hours}${next.minutes}${next.seconds}${next.ms.slice(0, 2)}`;
-
-      if (key !== prevKeyRef.current) {
-        prevKeyRef.current = key;
-        setSnapshot(next);
+      // ── Render-skip: only update React state when visible values change ──
+      // Compare HH:MM:SS + first 2 ms digits (~50ms visual granularity).
+      const key = `${snap.hours}${snap.minutes}${snap.seconds}${snap.ms.slice(0, 2)}`;
+      if (key === prevKeyRef.current) {
+        rafRef.current = requestAnimationFrame(tick);
+        return;
       }
+      prevKeyRef.current = key;
+
+      // ── DST transition detection ──────────────────────────────────────────
+      // offsetMinutes is already computed inside getTimeInTimezone() at no
+      // extra cost. If it changed since last tick, DST just flipped.
+      const dstTransitioned = snap.offsetMinutes !== prevOffsetRef.current;
+      if (dstTransitioned) {
+        prevOffsetRef.current = snap.offsetMinutes;
+        // Also reset the day/night ref so hysteresis starts fresh at new offset
+        isDayRef.current = snap.hourNum >= 6 && snap.hourNum < 20;
+      }
+
+      // ── Stable day/night with hysteresis ─────────────────────────────────
+      const newIsDay = isDaytimeStable(snap, isDayRef.current);
+      isDayRef.current = newIsDay;
+
+      setState({
+        ...snap,
+        isDay: newIsDay,
+        utcOffset: offsetToString(snap.offsetMinutes),
+        dstTransitioned,
+      });
 
       rafRef.current = requestAnimationFrame(tick);
     };
 
     rafRef.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafRef.current);
-  }, [timezone]); // restart loop only when timezone actually changes
+  }, [timezone]);
 
-  return snapshot;
+  return state;
 }
 
 // ─── useStaticClock ───────────────────────────────────────────────────────────
-// Lighter version for cards/lists that only need per-second updates.
-// Much cheaper — uses setInterval instead of RAF, no milliseconds.
+// Lightweight per-second clock for country cards and lists (no milliseconds).
+//
+// DST handling:
+//   • Uses a drift-corrected scheduler instead of bare setInterval(fn, 1000).
+//     setInterval accumulates ~20ms/hr of drift and browsers clamp it to
+//     ≥1000ms in background tabs — so after 10 minutes backgrounded the
+//     displayed second can be noticeably stale.
+//   • We snap to the next wall-clock second boundary using Date.now() % 1000
+//     on every tick, so drift is bounded to ~1ms rather than accumulating.
+//   • DST offset changes are detected the same way as useLiveClock: by
+//     comparing offsetMinutes across consecutive snapshots.
 
-export function useStaticClock(timezone: string): TimeSnapshot {
-  const [snapshot, setSnapshot] = useState<TimeSnapshot>(() => getTimeInTimezone(timezone));
-  const tzRef = useRef<string>(timezone);
+export interface StaticClockResult extends TimeSnapshot {
+  isDay: boolean;
+  utcOffset: string;
+  dstTransitioned: boolean;
+}
+
+export function useStaticClock(timezone: string): StaticClockResult {
+  const [state, setState] = useState<StaticClockResult>(() => {
+    const snap = getTimeInTimezone(timezone);
+    return { ...snap, isDay: snap.hourNum >= 6 && snap.hourNum < 20, utcOffset: offsetToString(snap.offsetMinutes), dstTransitioned: false };
+  });
+
+  const tzRef         = useRef(timezone);
+  const timerRef      = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevOffsetRef = useRef(state.offsetMinutes);
+  const isDayRef      = useRef(state.isDay);
 
   useEffect(() => { tzRef.current = timezone; }, [timezone]);
 
   useEffect(() => {
-    const id = setInterval(() => {
-      setSnapshot(getTimeInTimezone(tzRef.current));
-    }, 1000);
-    return () => clearInterval(id);
+    // Reset on timezone change
+    const initial = getTimeInTimezone(timezone);
+    prevOffsetRef.current = initial.offsetMinutes;
+    isDayRef.current      = initial.hourNum >= 6 && initial.hourNum < 20;
+
+    // Drift-corrected scheduler: schedule each tick to fire at the next
+    // exact wall-clock second boundary. Maximum drift = ~1ms per tick
+    // (setTimeout scheduling jitter), never cumulative.
+    const schedule = () => {
+      const msUntilNextSecond = 1000 - (Date.now() % 1000);
+      timerRef.current = setTimeout(() => {
+        const snap = getTimeInTimezone(tzRef.current);
+
+        const dstTransitioned = snap.offsetMinutes !== prevOffsetRef.current;
+        if (dstTransitioned) {
+          prevOffsetRef.current = snap.offsetMinutes;
+          isDayRef.current = snap.hourNum >= 6 && snap.hourNum < 20;
+        }
+
+        const newIsDay = isDaytimeStable(snap, isDayRef.current);
+        isDayRef.current = newIsDay;
+
+        setState({
+          ...snap,
+          isDay: newIsDay,
+          utcOffset: offsetToString(snap.offsetMinutes),
+          dstTransitioned,
+        });
+
+        schedule(); // schedule the next tick from within this one
+      }, msUntilNextSecond);
+    };
+
+    schedule();
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [timezone]);
 
-  return snapshot;
+  return state;
 }
