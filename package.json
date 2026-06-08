@@ -1,0 +1,8 @@
+{
+  "name": "globaltime-root",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "cd globaltime && npm install && npm run build"
+  }
+}

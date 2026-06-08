@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "buildCommand": "cd globaltime && npm install && npm run build",
+  "outputDirectory": "globaltime/dist",
+  "installCommand": "echo skip",
+  "framework": null,
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
