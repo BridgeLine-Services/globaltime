@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /x-admin-9f3a
 
 Sitemap: https://worldclock.live/sitemap.xml

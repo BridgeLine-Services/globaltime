@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Shield, Eye, EyeOff, Save, ToggleLeft, ToggleRight, BarChart2, LogOut } from 'lucide-react';
 import { useAdStore, type AdSlot } from '../stores/adStore';
+import { useSEO } from '../hooks/useSEO';
 import { useAnalyticsStore } from '../stores/analyticsStore';
 
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin2025';
 
 export const AdminPanel: React.FC = () => {
+  useSEO({ title: 'Admin', description: '', canonical: 'https://worldclock.live/', noindex: true });
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
