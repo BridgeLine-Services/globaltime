@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowRight, Trophy, Zap, Brain, MousePointer, Grid3X3, Play, Keyboard, Globe, Gamepad2, Palette } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
+import { useSEO } from '../hooks/useSEO';
 
 const GAMES = [
   { slug: 'reaction', Icon: Zap,          name: 'Reaction Test',    desc: 'Tap the instant the screen turns green. How fast are your reflexes?',      color: 'from-yellow-500/20 to-orange-600/20', border: 'border-yellow-500/30',  badge: 'Speed',    emoji: '⚡' },
@@ -16,56 +17,90 @@ const GAMES = [
   { slug: 'color',    Icon: Palette,      name: 'Color Match',      desc: 'Stroop effect game — does the ink color match the word? Sounds easy...',    color: 'from-fuchsia-500/20 to-pink-600/20',  border: 'border-fuchsia-500/30', badge: 'Brain',    emoji: '🎨' },
 ];
 
-export const GamesPage: React.FC = () => (
-  <div className="min-h-screen bg-[#0a0a1a] pt-24 px-4 pb-16">
-    <div className="max-w-6xl mx-auto">
+export const GamesPage: React.FC = () => {
+  useSEO({
+    title: 'Free Mini Games — Reaction, Memory, Typing & More | WorldClock.live',
+    description: 'Play 9 free browser mini-games on WorldClock.live — reaction time test, memory flip, speed typing, timezone quiz, snake, and more. No download, instant play.',
+    canonical: 'https://worldclock.live/games',
+    structuredData: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        'name': 'Free Mini Games',
+        'description': '9 free browser mini-games — no download, instant play.',
+        'url': 'https://worldclock.live/games',
+        'breadcrumb': {
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home',       'item': 'https://worldclock.live/' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Mini Games', 'item': 'https://worldclock.live/games' },
+          ],
+        },
+      },
+      ...GAMES.map(g => ({
+        '@context': 'https://schema.org',
+        '@type': 'SoftwareApplication',
+        'name': g.name,
+        'description': g.desc,
+        'url': `https://worldclock.live/games/${g.slug}`,
+        'applicationCategory': 'GameApplication',
+        'operatingSystem': 'Web',
+        'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },
+      })),
+    ],
+  });
 
-      <AdSlotComponent position="header" index={0} className="mb-6" />
+  return (
+    <div className="min-h-screen bg-[#0a0a1a] pt-24 px-4 pb-16">
+      <div className="max-w-6xl mx-auto">
 
-      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center">
-        <div className="text-6xl mb-4">🎮</div>
-        <h1 className="text-5xl font-black text-white mb-3">
-          Mini <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Games</span>
-        </h1>
-        <p className="text-white/50 max-w-lg mx-auto text-lg">
-          Take a break from time zones. 9 quick, addictive games — no download, no install.
-        </p>
-        <div className="flex items-center justify-center gap-2 mt-4 text-white/30 text-sm">
-          <Trophy size={14} className="text-yellow-400" />
-          <span>All games have leaderboards — submit your score!</span>
-        </div>
-      </motion.div>
+        <AdSlotComponent position="header" index={0} className="mb-6" />
 
-      <AdSlotComponent position="mid-page" index={0} className="mb-8" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-10 text-center">
+          <div className="text-6xl mb-4">🎮</div>
+          <h1 className="text-5xl font-black text-white mb-3">
+            Mini <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">Games</span>
+          </h1>
+          <p className="text-white/50 max-w-lg mx-auto text-lg">
+            Take a break from time zones. 9 quick, addictive games — no download, no install.
+          </p>
+          <div className="flex items-center justify-center gap-2 mt-4 text-white/30 text-sm">
+            <Trophy size={14} className="text-yellow-400" />
+            <span>All games have leaderboards — submit your score!</span>
+          </div>
+        </motion.div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
-        {GAMES.map((game, i) => (
-          <motion.div key={game.slug}
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.07 }}>
-            <Link to={`/games/${game.slug}`}
-              className={`group block p-6 rounded-3xl border ${game.border} bg-gradient-to-br ${game.color} hover:scale-[1.03] transition-all duration-300 hover:shadow-xl hover:shadow-purple-900/20`}>
-              <div className="flex items-start justify-between mb-4">
-                <span className="text-5xl">{game.emoji}</span>
-                <div className="flex flex-col items-end gap-1">
-                  <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/60 text-xs font-medium">{game.badge}</span>
-                  <div className="flex items-center gap-0.5 text-yellow-400/60 text-xs">
-                    <Trophy size={10} /><span>Leaderboard</span>
+        <AdSlotComponent position="mid-page" index={0} className="mb-8" />
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
+          {GAMES.map((game, i) => (
+            <motion.div key={game.slug}
+              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.07 }}>
+              <Link to={`/games/${game.slug}`}
+                className={`group block p-6 rounded-3xl border ${game.border} bg-gradient-to-br ${game.color} hover:scale-[1.03] transition-all duration-300 hover:shadow-xl hover:shadow-purple-900/20`}>
+                <div className="flex items-start justify-between mb-4">
+                  <span className="text-5xl">{game.emoji}</span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="px-2.5 py-1 rounded-full bg-white/10 text-white/60 text-xs font-medium">{game.badge}</span>
+                    <div className="flex items-center gap-0.5 text-yellow-400/60 text-xs">
+                      <Trophy size={10} /><span>Leaderboard</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <h2 className="text-white font-bold text-xl mb-2">{game.name}</h2>
-              <p className="text-white/50 text-sm leading-relaxed mb-5">{game.desc}</p>
-              <div className="flex items-center gap-1.5 text-white/40 text-sm group-hover:text-white/80 transition-colors font-medium">
-                <game.Icon size={14} /> Play now <ArrowRight size={14} />
-              </div>
-            </Link>
-          </motion.div>
-        ))}
-      </div>
+                <h2 className="text-white font-bold text-xl mb-2">{game.name}</h2>
+                <p className="text-white/50 text-sm leading-relaxed mb-5">{game.desc}</p>
+                <div className="flex items-center gap-1.5 text-white/40 text-sm group-hover:text-white/80 transition-colors font-medium">
+                  <game.Icon size={14} /> Play now <ArrowRight size={14} />
+                </div>
+              </Link>
+            </motion.div>
+          ))}
+        </div>
 
-      <AdSlotComponent position="mid-page" index={1} className="mb-4" />
-      <AdSlotComponent position="game" index={0} />
+        <AdSlotComponent position="mid-page" index={1} className="mb-4" />
+        <AdSlotComponent position="game" index={0} />
+      </div>
     </div>
-  </div>
-);
+  );
+};

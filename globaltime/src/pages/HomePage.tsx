@@ -7,6 +7,7 @@ import { LiveClock } from '../components/LiveClock';
 import { CountryCard } from '../components/CountryCard';
 import { AdSlotComponent } from '../components/AdSlot';
 import { COUNTRIES } from '../data/countries';
+import { useSEO } from '../hooks/useSEO';
 import { type Country } from '../data/countries';
 
 const Globe3D = lazy(() => import('../components/Globe3D').then(m => ({ default: m.Globe3D })));
@@ -15,6 +16,12 @@ const FEATURED_COUNTRIES = ['united-states', 'japan', 'united-kingdom', 'germany
 
 export const HomePage: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
+  useSEO({
+    title: 'WorldClock.live — Real-Time World Clock for Every Country',
+    description: 'See the exact current time in every country on Earth — live, millisecond precision. Interactive 3D globe, timezone explorer, and 150+ countries. Free.',
+    canonical: 'https://worldclock.live/',
+  });
+
   const featured = COUNTRIES.filter(c => FEATURED_COUNTRIES.includes(c.slug));
 
   return (

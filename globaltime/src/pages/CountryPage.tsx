@@ -1,52 +1,75 @@
-import React, { useEffect, Suspense, lazy } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft, Globe, MapPin, ArrowRight } from 'lucide-react';
+import { Globe, MapPin, ArrowRight } from 'lucide-react';
 import { useLiveClock } from '../hooks/useLiveClock';
 import { getCountryBySlug, COUNTRIES } from '../data/countries';
 import { LiveClock } from '../components/LiveClock';
 import { CountryCard } from '../components/CountryCard';
 import { AdSlotComponent } from '../components/AdSlot';
-
 import { useAnalyticsStore } from '../stores/analyticsStore';
+import { useSEO } from '../hooks/useSEO';
+import { getUTCOffset } from '../utils/time';
 
 const Globe3D = lazy(() => import('../components/Globe3D').then(m => ({ default: m.Globe3D })));
 
 export const CountryPage: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>();
-  const country = slug ? getCountryBySlug(slug) : null;
+  const { slug }    = useParams<{ slug: string }>();
+  const country     = slug ? getCountryBySlug(slug) : null;
   const { recordPageView } = useAnalyticsStore();
 
-  useEffect(() => {
-    if (country) {
-      recordPageView(`/time/${country.slug}`);
-      document.title = `${country.name} Time — WorldClock.live | Current Time in ${country.capital}`;
-    }
-  }, [country]);
+  // Must be called unconditionally (hooks rule) — safe because we redirect below if no country
+  const utcOffset = country ? getUTCOffset(country.timezone) : 'UTC+00:00';
+
+  useSEO(country ? {
+    title: `Current Time in ${country.name} — ${country.capital} Live Clock | WorldClock.live`,
+    description: `What time is it in ${country.name} right now? See the live local time in ${country.capital} (${country.timezone}, ${utcOffset}). Updated every millisecond.`,
+    canonical: `https://worldclock.live/time/${country.slug}`,
+    structuredData: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'WebPage',
+        'name': `Current Time in ${country.name}`,
+        'description': `Live local time in ${country.name} (${country.capital}). Timezone: ${country.timezone}. UTC offset: ${utcOffset}.`,
+        'url': `https://worldclock.live/time/${country.slug}`,
+        'breadcrumb': {
+          '@type': 'BreadcrumbList',
+          'itemListElement': [
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home',         'item': 'https://worldclock.live/' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'World Clock',  'item': 'https://worldclock.live/world' },
+            { '@type': 'ListItem', 'position': 3, 'name': country.name,   'item': `https://worldclock.live/time/${country.slug}` },
+          ],
+        },
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Country',
+        'name': country.name,
+        'containsPlace': { '@type': 'City', 'name': country.capital },
+      },
+    ],
+  } : {
+    title: 'Country Not Found | WorldClock.live',
+    description: 'This country page was not found.',
+    canonical: 'https://worldclock.live/world',
+    noindex: true,
+  });
+
+  // Analytics (safe to call after hooks)
+  React.useEffect(() => {
+    if (country) recordPageView(`/time/${country.slug}`);
+  }, [country?.slug]);
 
   if (!country) return <Navigate to="/world" replace />;
 
-  const { isDay, utcOffset: offset } = useLiveClock(country.timezone);
-
-
-
+  const { isDay } = useLiveClock(country.timezone);
 
   const related = COUNTRIES
     .filter(c => c.continent === country.continent && c.slug !== country.slug)
     .slice(0, 8);
 
-  const schemaData = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    "name": `Current Time in ${country.name}`,
-    "description": `See the exact current local time in ${country.name} (${country.capital}). Timezone: ${country.timezone}. Live, down to the millisecond.`,
-    "url": `https://worldclock.live/time/${country.slug}`,
-    "about": { "@type": "Country", "name": country.name }
-  };
-
   return (
     <div className="min-h-screen bg-[#0a0a1a] pt-20">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaData) }} />
 
       {/* Hero */}
       <section className="relative overflow-hidden">
@@ -57,14 +80,21 @@ export const CountryPage: React.FC = () => {
           style={{ background: isDay ? 'radial-gradient(#60a5fa, transparent)' : 'radial-gradient(#818cf8, transparent)' }} />
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <Link to="/world" className="inline-flex items-center gap-2 text-white/40 hover:text-white text-sm mb-8 transition-colors group">
-            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Back to World Clock
-          </Link>
+          {/* Breadcrumb nav — also visible to Google */}
+          <nav aria-label="Breadcrumb" className="mb-8">
+            <ol className="flex items-center gap-2 text-sm text-white/40">
+              <li><Link to="/" className="hover:text-white transition-colors">Home</Link></li>
+              <li className="text-white/20">/</li>
+              <li><Link to="/world" className="hover:text-white transition-colors">World Clock</Link></li>
+              <li className="text-white/20">/</li>
+              <li className="text-white/70">{country.name}</li>
+            </ol>
+          </nav>
 
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
               <div className="flex items-center gap-4 mb-6">
-                <span className="text-7xl">{country.flag}</span>
+                <span className="text-7xl" role="img" aria-label={`${country.name} flag`}>{country.flag}</span>
                 <div>
                   <h1 className="text-4xl md:text-5xl font-black text-white">{country.name}</h1>
                   <div className="flex items-center gap-2 mt-2 text-white/50">
@@ -92,7 +122,7 @@ export const CountryPage: React.FC = () => {
                 </div>
                 <div className="p-4 rounded-2xl border border-white/10 bg-white/5">
                   <div className="text-white/40 text-xs mb-1">UTC OFFSET</div>
-                  <div className="text-cyan-400 font-mono text-sm font-bold">{offset}</div>
+                  <div className="text-cyan-400 font-mono text-sm font-bold">{utcOffset}</div>
                 </div>
               </div>
             </motion.div>
@@ -112,12 +142,12 @@ export const CountryPage: React.FC = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* SEO Content */}
+        {/* SEO Content block */}
         <section className="mb-10 p-6 rounded-2xl border border-white/10 bg-white/5">
           <h2 className="text-white font-bold text-xl mb-3">About Time in {country.name}</h2>
           <p className="text-white/50 leading-relaxed">
-            {country.name} currently observes <strong className="text-white">{country.timezone}</strong> timezone,
-            which is <strong className="text-cyan-400">{offset}</strong> from Coordinated Universal Time (UTC).
+            {country.name} currently observes the <strong className="text-white">{country.timezone}</strong> timezone,
+            which is <strong className="text-cyan-400">{utcOffset}</strong> from Coordinated Universal Time (UTC).
             The capital city, <strong className="text-white">{country.capital}</strong>, serves as the reference point
             for official local time. {isDay ? 'It is currently daytime' : 'It is currently nighttime'} in {country.name}.
           </p>

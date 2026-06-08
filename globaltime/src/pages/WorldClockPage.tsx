@@ -4,9 +4,30 @@ import { SearchBar } from '../components/SearchBar';
 import { CountryCard } from '../components/CountryCard';
 import { AdSlotComponent } from '../components/AdSlot';
 import { COUNTRIES, CONTINENTS } from '../data/countries';
+import { useSEO } from '../hooks/useSEO';
 
 export const WorldClockPage: React.FC = () => {
   const [activeContinent, setActiveContinent] = useState('All');
+
+  useSEO({
+    title: 'World Clock — Current Time in Every Country | WorldClock.live',
+    description: `Live current time for all ${COUNTRIES.length}+ countries and territories. Browse by continent, search any country, and see the exact local time with millisecond precision.`,
+    canonical: 'https://worldclock.live/world',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      'name': 'World Clock — Current Time in Every Country',
+      'description': `Real-time clocks for ${COUNTRIES.length}+ countries, live down to the millisecond.`,
+      'url': 'https://worldclock.live/world',
+      'breadcrumb': {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home',         'item': 'https://worldclock.live/' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'World Clock',  'item': 'https://worldclock.live/world' },
+        ],
+      },
+    },
+  });
 
   const filtered = activeContinent === 'All'
     ? COUNTRIES
