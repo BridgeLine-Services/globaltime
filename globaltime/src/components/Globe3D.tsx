@@ -37,16 +37,16 @@ function latLngToVec3(lat: number, lng: number, r: number): THREE.Vector3 {
 }
 
 export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, onCountrySelect }) => {
-  const mountRef   = useRef<HTMLDivElement>(null);
-  const rendRef    = useRef<THREE.WebGLRenderer | null>(null);
-  const sceneRef   = useRef<THREE.Scene | null>(null);
-  const cameraRef  = useRef<THREE.PerspectiveCamera | null>(null);
-  const groupRef   = useRef<THREE.Group | null>(null);   // ← everything rotates as one group
+  const mountRef    = useRef<HTMLDivElement>(null);
+  const rendRef     = useRef<THREE.WebGLRenderer | null>(null);
+  const sceneRef    = useRef<THREE.Scene | null>(null);
+  const cameraRef   = useRef<THREE.PerspectiveCamera | null>(null);
+  const groupRef    = useRef<THREE.Group | null>(null);
   const cMarkersRef = useRef<THREE.Mesh[]>([]);
   const lMarkersRef = useRef<THREE.Mesh[]>([]);
   const rafRef      = useRef<number>(0);
 
-  // Drag / momentum state
+  // Drag / momentum
   const isDragging  = useRef(false);
   const prevPtr     = useRef({ x: 0, y: 0 });
   const velY        = useRef(0);
@@ -54,6 +54,9 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const autoRotate  = useRef(true);
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const movedPx     = useRef(0);
+
+  // Pinch-to-zoom state
+  const pinchRef     = useRef<{ active: boolean; dist: number }>({ active: false, dist: 0 });
 
   const [tooltip, setTooltip] = useState<{ landmark: Landmark; x: number; y: number } | null>(null);
   const tooltipTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -65,14 +68,12 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     const W = container.clientWidth  || 600;
     const H = container.clientHeight || 600;
 
-    // Scene + camera
     const scene  = new THREE.Scene();
     sceneRef.current = scene;
     const camera = new THREE.PerspectiveCamera(45, W / H, 0.1, 1000);
     camera.position.z = 2.8;
     cameraRef.current = camera;
 
-    // Renderer
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -80,7 +81,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     container.appendChild(renderer.domElement);
     rendRef.current = renderer;
 
-    // ── Stars ──────────────────────────────────────────────────────────────
+    // Stars
     const starPos = new Float32Array(4000 * 3);
     for (let i = 0; i < starPos.length; i++) starPos[i] = (Math.random() - 0.5) * 300;
     const starGeo = new THREE.BufferGeometry();
@@ -90,7 +91,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       new THREE.PointsMaterial({ color: 0xffffff, size: 0.13, transparent: true, opacity: 0.6 }),
     ));
 
-    // ── Lights ─────────────────────────────────────────────────────────────
+    // Lights
     scene.add(new THREE.AmbientLight(0x334466, 1.4));
     const sun = new THREE.DirectionalLight(0xffffff, 2.0);
     sun.position.set(5, 3, 5);
@@ -99,49 +100,39 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     fill.position.set(-5, -3, -5);
     scene.add(fill);
 
-    // ── Globe group — ALL globe objects go in here so they spin together ───
+    // Globe group — everything rotates together
     const group = new THREE.Group();
     scene.add(group);
     groupRef.current = group;
 
     // Textures
-    const loader = new THREE.TextureLoader();
-    const colorTex    = loader.load('/textures/earth_color.jpg');
-    const normalTex   = loader.load('/textures/earth_normal.jpg');
-    const specularTex = loader.load('/textures/earth_specular.jpg');
+    const loader     = new THREE.TextureLoader();
+    const colorTex   = loader.load('/textures/earth_color.jpg');
+    const normalTex  = loader.load('/textures/earth_normal.jpg');
+    const specTex    = loader.load('/textures/earth_specular.jpg');
 
     // Earth sphere
-    const globe = new THREE.Mesh(
+    group.add(new THREE.Mesh(
       new THREE.SphereGeometry(1, 64, 64),
       new THREE.MeshPhongMaterial({
-        map:         colorTex,
-        normalMap:   normalTex,
-        specularMap: specularTex,
-        specular:    new THREE.Color(0x336699),
-        shininess:   35,
+        map: colorTex, normalMap: normalTex, specularMap: specTex,
+        specular: new THREE.Color(0x336699), shininess: 35,
       }),
-    );
-    group.add(globe);
+    ));
 
-    // Atmosphere glow (inner)
-    const atmoInner = new THREE.Mesh(
+    // Inner atmosphere
+    group.add(new THREE.Mesh(
       new THREE.SphereGeometry(1.015, 40, 40),
-      new THREE.MeshPhongMaterial({
-        color: 0x4488ff, transparent: true, opacity: 0.08, side: THREE.FrontSide,
-      }),
-    );
-    group.add(atmoInner);
+      new THREE.MeshPhongMaterial({ color: 0x4488ff, transparent: true, opacity: 0.08, side: THREE.FrontSide }),
+    ));
 
-    // Atmosphere glow (outer halo — stays in scene, not group, so it doesn't rotate)
-    const atmoOuter = new THREE.Mesh(
+    // Outer halo (stays in scene — doesn't rotate)
+    scene.add(new THREE.Mesh(
       new THREE.SphereGeometry(1.12, 40, 40),
-      new THREE.MeshPhongMaterial({
-        color: 0x2255cc, transparent: true, opacity: 0.055, side: THREE.BackSide,
-      }),
-    );
-    scene.add(atmoOuter); // intentionally NOT in group
+      new THREE.MeshPhongMaterial({ color: 0x2255cc, transparent: true, opacity: 0.055, side: THREE.BackSide }),
+    ));
 
-    // Lat/lng grid lines
+    // Grid lines
     const lineMat = new THREE.LineBasicMaterial({ color: 0x004488, transparent: true, opacity: 0.18 });
     for (let lat = -60; lat <= 60; lat += 30) {
       const pts = Array.from({ length: 73 }, (_, i) => latLngToVec3(lat, i * 5 - 180, 1.003));
@@ -152,11 +143,11 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
     }
 
-    // ── Country markers ────────────────────────────────────────────────────
+    // Country markers
     const cMarkers: THREE.Mesh[] = [];
     countries.forEach(c => {
-      const pos  = latLngToVec3(c.lat, c.lng, 1.018);
-      const dot  = new THREE.Mesh(
+      const pos = latLngToVec3(c.lat, c.lng, 1.018);
+      const dot = new THREE.Mesh(
         new THREE.SphereGeometry(0.013, 8, 8),
         new THREE.MeshBasicMaterial({ color: 0x00d4ff }),
       );
@@ -176,7 +167,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     });
     cMarkersRef.current = cMarkers;
 
-    // ── Landmark markers ───────────────────────────────────────────────────
+    // Landmark markers
     const lMarkers: THREE.Mesh[] = [];
     LANDMARKS.forEach(lm => {
       const pos   = latLngToVec3(lm.lat, lm.lng, 1.022);
@@ -209,7 +200,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     });
     lMarkersRef.current = lMarkers;
 
-    // ── Animation loop ─────────────────────────────────────────────────────
+    // Animation loop
     let frame = 0;
     const FRICTION   = 0.88;
     const AUTO_SPEED = 0.0014;
@@ -219,10 +210,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       frame++;
       rafRef.current = requestAnimationFrame(animate);
 
-      if (isDragging.current) {
-        // velocity applied live in moveDrag; just clamp x here
-        group.rotation.x = Math.max(-X_LIMIT, Math.min(X_LIMIT, group.rotation.x));
-      } else {
+      if (!isDragging.current) {
         if (Math.abs(velY.current) > 0.00006 || Math.abs(velX.current) > 0.00006) {
           group.rotation.y += velY.current;
           group.rotation.x += velX.current;
@@ -233,6 +221,8 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
           velY.current += (AUTO_SPEED - velY.current) * 0.012;
           group.rotation.y += velY.current;
         }
+      } else {
+        group.rotation.x = Math.max(-X_LIMIT, Math.min(X_LIMIT, group.rotation.x));
       }
 
       // Pulse rings
@@ -249,7 +239,6 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     };
     animate();
 
-    // Resize handler
     const onResize = () => {
       const W2 = container.clientWidth;
       const H2 = container.clientHeight;
@@ -259,15 +248,93 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     };
     window.addEventListener('resize', onResize);
 
+    // ── Non-passive touch listeners on the canvas element ──────────────────
+    // React synthetic touch events are passive by default in modern browsers,
+    // which means e.preventDefault() is ignored and the page scrolls/zooms.
+    // We attach non-passive listeners directly to the DOM element instead.
+    const el = renderer.domElement;
+
+    const getTouchDist = (e: TouchEvent) => {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        // Pinch start
+        e.preventDefault();
+        pinchRef.current = { active: true, dist: getTouchDist(e) };
+        isDragging.current = false;
+      } else if (e.touches.length === 1) {
+        e.preventDefault();
+        isDragging.current  = true;
+        movedPx.current     = 0;
+        prevPtr.current     = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        velY.current = 0;
+        velX.current = 0;
+        if (resumeTimer.current) clearTimeout(resumeTimer.current);
+        autoRotate.current = false;
+        setTooltip(null);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      e.preventDefault(); // always prevent — stops page scroll AND browser pinch-zoom
+
+      if (e.touches.length === 2 && pinchRef.current.active) {
+        // Pinch-to-zoom
+        const newDist = getTouchDist(e);
+        const delta   = pinchRef.current.dist - newDist;
+        pinchRef.current.dist = newDist;
+        if (cameraRef.current) {
+          cameraRef.current.position.z = Math.max(1.4, Math.min(5.5,
+            cameraRef.current.position.z + delta * 0.012,
+          ));
+        }
+      } else if (e.touches.length === 1 && isDragging.current && groupRef.current) {
+        const x  = e.touches[0].clientX;
+        const y  = e.touches[0].clientY;
+        const dx = x - prevPtr.current.x;
+        const dy = y - prevPtr.current.y;
+        movedPx.current += Math.abs(dx) + Math.abs(dy);
+
+        velY.current = dx * 0.005;
+        velX.current = dy * 0.005;
+        groupRef.current.rotation.y += velY.current;
+        groupRef.current.rotation.x += velX.current;
+        groupRef.current.rotation.x  = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, groupRef.current.rotation.x));
+        prevPtr.current = { x, y };
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) {
+        pinchRef.current.active = false;
+      }
+      if (e.touches.length === 0) {
+        isDragging.current = false;
+        if (resumeTimer.current) clearTimeout(resumeTimer.current);
+        resumeTimer.current = setTimeout(() => { autoRotate.current = true; }, 4000);
+      }
+    };
+
+    el.addEventListener('touchstart', handleTouchStart, { passive: false });
+    el.addEventListener('touchmove',  handleTouchMove,  { passive: false });
+    el.addEventListener('touchend',   handleTouchEnd,   { passive: false });
+
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener('resize', onResize);
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchmove',  handleTouchMove);
+      el.removeEventListener('touchend',   handleTouchEnd);
       renderer.dispose();
       if (container.contains(renderer.domElement)) container.removeChild(renderer.domElement);
     };
   }, [countries]);
 
-  // ── Drag callbacks ─────────────────────────────────────────────────────────
+  // ── Mouse drag callbacks ───────────────────────────────────────────────────
   const startDrag = useCallback((x: number, y: number) => {
     isDragging.current  = true;
     movedPx.current     = 0;
@@ -284,15 +351,11 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     const dx = x - prevPtr.current.x;
     const dy = y - prevPtr.current.y;
     movedPx.current += Math.abs(dx) + Math.abs(dy);
-
-    const sensitivity = 0.005;
-    velY.current = dx * sensitivity;
-    velX.current = dy * sensitivity;
-
+    velY.current = dx * 0.005;
+    velX.current = dy * 0.005;
     groupRef.current.rotation.y += velY.current;
     groupRef.current.rotation.x += velX.current;
     groupRef.current.rotation.x  = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, groupRef.current.rotation.x));
-
     prevPtr.current = { x, y };
   }, []);
 
@@ -302,7 +365,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     resumeTimer.current = setTimeout(() => { autoRotate.current = true; }, 4000);
   }, []);
 
-  // ── Raycasting (click) ─────────────────────────────────────────────────────
+  // ── Raycasting ─────────────────────────────────────────────────────────────
   const handleClick = useCallback((e: React.MouseEvent) => {
     if (movedPx.current > 8) return;
     if (!mountRef.current || !cameraRef.current) return;
@@ -317,9 +380,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     const lmHits = ray.intersectObjects(lMarkersRef.current);
     if (lmHits.length > 0) {
       const lm = lmHits[0].object.userData.landmark as Landmark;
-      const rx = e.clientX - rect.left;
-      const ry = e.clientY - rect.top;
-      setTooltip({ landmark: lm, x: rx, y: ry });
+      setTooltip({ landmark: lm, x: e.clientX - rect.left, y: e.clientY - rect.top });
       if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
       tooltipTimer.current = setTimeout(() => setTooltip(null), 5000);
       return;
@@ -332,29 +393,19 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     }
   }, [onCountrySelect]);
 
-  // ── Scroll-to-zoom ────────────────────────────────────────────────────────
+  // ── Mouse wheel zoom ───────────────────────────────────────────────────────
   const onWheel = useCallback((e: React.WheelEvent) => {
     if (!cameraRef.current) return;
-    e.preventDefault();
-    cameraRef.current.position.z = Math.max(1.4, Math.min(5.5, cameraRef.current.position.z + e.deltaY * 0.004));
+    cameraRef.current.position.z = Math.max(1.4, Math.min(5.5,
+      cameraRef.current.position.z + e.deltaY * 0.004,
+    ));
   }, []);
 
-  // ── Event handler wiring ──────────────────────────────────────────────────
+  // ── Mouse event wiring ─────────────────────────────────────────────────────
   const onMD = useCallback((e: React.MouseEvent) => startDrag(e.clientX, e.clientY), [startDrag]);
   const onMM = useCallback((e: React.MouseEvent) => moveDrag(e.clientX, e.clientY), [moveDrag]);
   const onMU = useCallback(() => endDrag(), [endDrag]);
   const onML = useCallback(() => { if (isDragging.current) endDrag(); }, [endDrag]);
-
-  const onTS = useCallback((e: React.TouchEvent) => {
-    const t = e.touches[0];
-    startDrag(t.clientX, t.clientY);
-  }, [startDrag]);
-  const onTM = useCallback((e: React.TouchEvent) => {
-    e.preventDefault();
-    const t = e.touches[0];
-    moveDrag(t.clientX, t.clientY);
-  }, [moveDrag]);
-  const onTE = useCallback(() => endDrag(), [endDrag]);
 
   // ── Selected country focus ────────────────────────────────────────────────
   useEffect(() => {
@@ -390,19 +441,21 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   ] as const;
 
   return (
-    <div className="relative w-full h-full">
+    <div className="relative w-full h-full" style={{ touchAction: 'none' }}>
+      {/* touchAction:none on the wrapper also tells the browser this region
+          handles its own touch gestures — belt-and-suspenders with the
+          non-passive listeners on the canvas */}
       <div
         ref={mountRef}
         className="w-full h-full cursor-grab active:cursor-grabbing select-none"
+        style={{ touchAction: 'none' }}
         onMouseDown={onMD}
         onMouseMove={onMM}
         onMouseUp={onMU}
         onMouseLeave={onML}
         onClick={handleClick}
         onWheel={onWheel}
-        onTouchStart={onTS}
-        onTouchMove={onTM}
-        onTouchEnd={onTE}
+        // Touch events handled via non-passive DOM listeners in useEffect
       />
 
       {/* Legend */}
@@ -419,7 +472,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       {/* Hints */}
       <div className="absolute top-3 right-3 text-white/25 text-xs pointer-events-none text-right leading-relaxed">
         <div>🖱 Drag to rotate</div>
-        <div>🔍 Scroll to zoom</div>
+        <div>🔍 Pinch / scroll to zoom</div>
         <div>📍 Click markers</div>
       </div>
 
