@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { HomePage } from './pages/HomePage';
@@ -32,6 +33,7 @@ export default function App() {
     <BrowserRouter>
       <div className="min-h-screen bg-[#0a0a1a]">
         <Navbar />
+        <Analytics />
         <Routes>
           <Route path="/"                  element={<HomePage />} />
           <Route path="/world"             element={<WorldClockPage />} />
