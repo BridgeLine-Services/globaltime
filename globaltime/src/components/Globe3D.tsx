@@ -113,7 +113,9 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     const sun = new THREE.DirectionalLight(0x7799ff, 2.2);
     sun.position.set(5, 3, 5);
     scene.add(sun);
-    scene.add(Object.assign(new THREE.DirectionalLight(0x2244aa, 0.5), { position: new THREE.Vector3(-5, -3, -5) }));
+    const fillLight = new THREE.DirectionalLight(0x2244aa, 0.5);
+    fillLight.position.set(-5, -3, -5);
+    scene.add(fillLight);
 
     // ── Stars ───────────────────────────────────────────────────────────────
     const starPos = new Float32Array(3000 * 3);
