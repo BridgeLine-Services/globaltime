@@ -13,17 +13,17 @@ export interface AdSlot {
   textColor?: string;
 }
 
-const DEFAULT_ADS: AdSlot[] = [
-  { id: 'ad1', name: 'Header Banner Top', position: 'header', type: 'text', content: '🚀 Advertise Here — Prime Header Placement', link: '#', isActive: true, backgroundColor: '#1a1a4e', textColor: '#00d4ff' },
-  { id: 'ad2', name: 'Header Banner Bottom', position: 'header', type: 'text', content: '⚡ Your Brand Reaches Global Audiences', link: '#', isActive: true, backgroundColor: '#0d0d2b', textColor: '#b347ea' },
-  { id: 'ad3', name: 'Sidebar Right Top', position: 'sidebar', type: 'text', content: '📊 Track Time. Track Performance.', link: '#', isActive: true, backgroundColor: '#111135', textColor: '#00ff88' },
-  { id: 'ad4', name: 'Sidebar Right Bottom', position: 'sidebar', type: 'text', content: '🌍 Go Global with Your Ads', link: '#', isActive: true, backgroundColor: '#111135', textColor: '#ff006e' },
-  { id: 'ad5', name: 'Mid-Page Banner 1', position: 'mid-page', type: 'text', content: '💡 Premium Mid-Page Ad Space — High Engagement Zone', link: '#', isActive: true, backgroundColor: '#1a1a4e', textColor: '#00d4ff' },
-  { id: 'ad6', name: 'Mid-Page Banner 2', position: 'mid-page', type: 'text', content: '🎯 Targeted Global Traffic — Advertise Here', link: '#', isActive: true, backgroundColor: '#0d0d2b', textColor: '#b347ea' },
-  { id: 'ad7', name: 'Footer Left', position: 'footer', type: 'text', content: '🌐 WorldClock.live Partner Spot', link: '#', isActive: true, backgroundColor: '#111135', textColor: '#00ff88' },
-  { id: 'ad8', name: 'Footer Right', position: 'footer', type: 'text', content: '📈 Boost Your Global Reach Today', link: '#', isActive: true, backgroundColor: '#111135', textColor: '#00d4ff' },
-  { id: 'ad9', name: 'Floating Sticky', position: 'floating', type: 'text', content: '📣 Special Offer — Click Here!', link: '#', isActive: false, backgroundColor: '#b347ea', textColor: '#ffffff' },
-  { id: 'ad10', name: 'Game Page Ad', position: 'game', type: 'text', content: '🎮 Play More Games — Sponsor Slot', link: '#', isActive: true, backgroundColor: '#1a1a4e', textColor: '#00d4ff' },
+export const DEFAULT_ADS: AdSlot[] = [
+  { id: 'ad1',  name: 'Header Banner Top',    position: 'header',   type: 'text', content: '🚀 Advertise Here — Prime Header Placement',           link: '#', isActive: true,  backgroundColor: '#1a1a4e', textColor: '#00d4ff' },
+  { id: 'ad2',  name: 'Header Banner Bottom', position: 'header',   type: 'text', content: '⚡ Your Brand Reaches Global Audiences',               link: '#', isActive: true,  backgroundColor: '#0d0d2b', textColor: '#b347ea' },
+  { id: 'ad3',  name: 'Sidebar Right Top',    position: 'sidebar',  type: 'text', content: '📊 Track Time. Track Performance.',                    link: '#', isActive: true,  backgroundColor: '#111135', textColor: '#00ff88' },
+  { id: 'ad4',  name: 'Sidebar Right Bottom', position: 'sidebar',  type: 'text', content: '🌍 Go Global with Your Ads',                           link: '#', isActive: true,  backgroundColor: '#111135', textColor: '#ff006e' },
+  { id: 'ad5',  name: 'Mid-Page Banner 1',    position: 'mid-page', type: 'text', content: '💡 Premium Mid-Page Ad Space — High Engagement Zone',   link: '#', isActive: true,  backgroundColor: '#1a1a4e', textColor: '#00d4ff' },
+  { id: 'ad6',  name: 'Mid-Page Banner 2',    position: 'mid-page', type: 'text', content: '🎯 Targeted Global Traffic — Advertise Here',           link: '#', isActive: true,  backgroundColor: '#0d0d2b', textColor: '#b347ea' },
+  { id: 'ad7',  name: 'Footer Left',          position: 'footer',   type: 'text', content: '🌐 WorldClock.live Partner Spot',                      link: '#', isActive: true,  backgroundColor: '#111135', textColor: '#00ff88' },
+  { id: 'ad8',  name: 'Footer Right',         position: 'footer',   type: 'text', content: '📈 Boost Your Global Reach Today',                     link: '#', isActive: true,  backgroundColor: '#111135', textColor: '#00d4ff' },
+  { id: 'ad9',  name: 'Floating Sticky',      position: 'floating', type: 'text', content: '📣 Special Offer — Click Here!',                       link: '#', isActive: false, backgroundColor: '#b347ea', textColor: '#ffffff' },
+  { id: 'ad10', name: 'Game Page Ad',         position: 'game',     type: 'text', content: '🎮 Play More Games — Sponsor Slot',                    link: '#', isActive: true,  backgroundColor: '#1a1a4e', textColor: '#00d4ff' },
 ];
 
 interface AdStore {
@@ -43,14 +43,43 @@ export const useAdStore = create<AdStore>()(
       ads: DEFAULT_ADS,
       isAdmin: false,
       adminToken: null,
+
       updateAd: (id, updates) =>
         set(state => ({ ads: state.ads.map(a => a.id === id ? { ...a, ...updates } : a) })),
+
       toggleAd: (id) =>
         set(state => ({ ads: state.ads.map(a => a.id === id ? { ...a, isActive: !a.isActive } : a) })),
+
       setAdmin: (token) => set({ isAdmin: true, adminToken: token }),
+
       logout: () => set({ isAdmin: false, adminToken: null }),
-      getAdsByPosition: (position) => get().ads.filter(a => a.position === position && a.isActive),
+
+      getAdsByPosition: (position) => {
+        try {
+          const ads = get().ads;
+          // Guard: if persisted ads is empty/corrupt, fall back to defaults
+          const source = Array.isArray(ads) && ads.length > 0 ? ads : DEFAULT_ADS;
+          return source.filter(a => a.position === position && a.isActive);
+        } catch {
+          return DEFAULT_ADS.filter(a => a.position === position && a.isActive);
+        }
+      },
     }),
-    { name: 'worldclock-ads' }
+    {
+      name: 'worldclock-ads-v3',
+      // Merge: always keep the stored ads if they look valid, else use defaults
+      merge: (persisted: unknown, current) => {
+        const p = persisted as Partial<AdStore>;
+        const storedAds = Array.isArray(p?.ads) && p.ads.length > 0 ? p.ads : DEFAULT_ADS;
+        return {
+          ...current,
+          ...p,
+          ads: storedAds,
+          // Never persist admin session across hard reloads for security
+          isAdmin: false,
+          adminToken: null,
+        };
+      },
+    }
   )
 );
