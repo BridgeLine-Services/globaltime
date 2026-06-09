@@ -22,8 +22,8 @@ export const CountryPage: React.FC = () => {
   const utcOffset = country ? getUTCOffset(country.timezone) : 'UTC+00:00';
 
   useSEO(country ? {
-    title: `Current Time in ${country.name} — ${country.capital} Live Clock | WorldClock.live`,
-    description: `What time is it in ${country.name} right now? See the live local time in ${country.capital} (${country.timezone}, ${utcOffset}). Updated every millisecond.`,
+    title: `Current Time in ${country.name} — ${country.capital} Live Clock | World Clock`,
+    description: `What time is it in ${country.name} right now? Live local time in ${country.capital} — timezone ${country.timezone} (${utcOffset}), currency, population, and country details.`,
     canonical: `https://globaltime-pi.vercel.app/time/${country.slug}`,
     structuredData: [
       {
@@ -49,7 +49,7 @@ export const CountryPage: React.FC = () => {
       },
     ],
   } : {
-    title: 'Country Not Found | WorldClock.live',
+    title: 'Country Not Found | World Clock',
     description: 'This country page was not found.',
     canonical: 'https://globaltime-pi.vercel.app/world',
     noindex: true,

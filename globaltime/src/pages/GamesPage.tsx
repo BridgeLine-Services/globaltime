@@ -29,8 +29,8 @@ const GAMES = [
 
 export const GamesPage: React.FC = () => {
   useSEO({
-    title: 'Free Mini Games — Reaction, Memory, Typing & More | WorldClock.live',
-    description: 'Play 9 free browser mini-games on WorldClock.live — reaction time test, memory flip, speed typing, timezone quiz, snake, and more. No download, instant play.',
+    title: 'Free Browser Games — 19 Mini Games to Play Now | World Clock',
+    description: '19 free mini games — reaction time, memory, typing speed, flag quiz, minesweeper, snake, and more. No download, no login, play instantly in your browser.',
     canonical: 'https://globaltime-pi.vercel.app/games',
     structuredData: [
       {

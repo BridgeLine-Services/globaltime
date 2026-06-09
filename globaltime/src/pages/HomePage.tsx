@@ -17,8 +17,8 @@ const FEATURED_COUNTRIES = ['united-states', 'japan', 'united-kingdom', 'germany
 export const HomePage: React.FC = () => {
   const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   useSEO({
-    title: 'WorldClock.live — Real-Time World Clock for Every Country',
-    description: 'See the exact current time in every country on Earth — live, millisecond precision. Interactive 3D globe, timezone explorer, and 150+ countries. Free.',
+    title: 'World Clock — Live Time in Every Country on Earth',
+    description: "It's always the right time somewhere. Find the exact local time in 195 countries instantly — interactive 3D globe, timezone converter, and live clocks that never miss a beat.",
     canonical: 'https://globaltime-pi.vercel.app/',
   });
 

@@ -10,8 +10,8 @@ export const WorldClockPage: React.FC = () => {
   const [activeContinent, setActiveContinent] = useState('All');
 
   useSEO({
-    title: 'World Clock — Current Time in Every Country | WorldClock.live',
-    description: `Live current time for all ${COUNTRIES.length}+ countries and territories. Browse by continent, search any country, and see the exact local time with millisecond precision.`,
+    title: 'World Clock — Current Local Time in Every Country & Territory',
+    description: `Live current time for all ${COUNTRIES.length}+ countries and territories. Search any country, browse by continent, and see the exact local time — updated every second.`,
     canonical: 'https://globaltime-pi.vercel.app/world',
     structuredData: {
       '@context': 'https://schema.org',

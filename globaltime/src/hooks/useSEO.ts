@@ -73,11 +73,15 @@ export function useSEO({
     setMeta('og:description', ogDescription ?? description, 'property');
     setMeta('og:url',         canonical,                    'property');
     setMeta('og:image',       ogImage,                      'property');
+    setMeta('og:image:width',  '1200',                      'property');
+    setMeta('og:image:height', '630',                       'property');
+    setMeta('og:image:type',   'image/png',                 'property');
 
     // Twitter
     setMeta('twitter:title',       ogTitle       ?? title,       'name');
     setMeta('twitter:description', ogDescription ?? description, 'name');
     setMeta('twitter:image',       ogImage,                      'name');
+    setMeta('twitter:image:alt',   ogTitle ?? title,             'name');
 
     if (structuredData) {
       setStructuredData('page-ld-json', structuredData);

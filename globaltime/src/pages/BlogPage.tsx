@@ -105,8 +105,8 @@ function PostModal({ post, onClose }: { post: BlogPost; onClose: () => void }) {
 
 export const BlogPage: React.FC = () => {
   useSEO({
-    title: 'World Stories & Fun Facts | WorldClock Blog',
-    description: 'Fascinating stories from around the world — culture, science, travel, history, and weird facts. New stories every 2 hours.',
+    title: 'World Stories & Facts — Culture, Science, Travel & History | World Clock',
+    description: 'Stranger than fiction, true everywhere. Dive into fascinating world stories — bizarre history, hidden science, wild travel facts, and cultural mysteries. Refreshed every 2 hours.',
     canonical: 'https://globaltime-pi.vercel.app/blog',
   });
 
