@@ -918,4 +918,10 @@
     <priority>0.8</priority>
     <lastmod>2026-06-08</lastmod>
   </url>
+  <url>
+    <loc>https://globaltime-pi.vercel.app/blog</loc>
+    <changefreq>hourly</changefreq>
+    <priority>0.8</priority>
+    <lastmod>2026-06-09</lastmod>
+  </url>
 </urlset>

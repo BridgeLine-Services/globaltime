@@ -181,13 +181,23 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       group.add(glow);
 
       const dot = new THREE.Mesh(
-        new THREE.SphereGeometry(0.020, 10, 10),
+        new THREE.SphereGeometry(0.028, 10, 10),
         new THREE.MeshBasicMaterial({ color }),
       );
       dot.position.copy(pos);
       dot.userData = { type: 'landmark', landmark: lm };
       group.add(dot);
       lMarkers.push(dot);
+
+      // Invisible larger hit-sphere so small dots are easy to click
+      const hitSphere = new THREE.Mesh(
+        new THREE.SphereGeometry(0.062, 8, 8),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
+      );
+      hitSphere.position.copy(pos);
+      hitSphere.userData = { type: 'landmark', landmark: lm };
+      group.add(hitSphere);
+      lMarkers.push(hitSphere);
 
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.026, 0.036, 20),
@@ -367,7 +377,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
 
   // ── Raycasting ─────────────────────────────────────────────────────────────
   const handleClick = useCallback((e: React.MouseEvent) => {
-    if (movedPx.current > 8) return;
+    if (movedPx.current > 12) return;
     if (!mountRef.current || !cameraRef.current) return;
     const rect  = mountRef.current.getBoundingClientRect();
     const mouse = new THREE.Vector2(
@@ -486,8 +496,8 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
             exit={{ opacity: 0, scale: 0.85,    y: 8 }}
             className="absolute z-20 pointer-events-none"
             style={{
-              left: Math.min(tooltip.x + 14, (mountRef.current?.clientWidth ?? 400) - 230),
-              top:  Math.max(tooltip.y - 90, 8),
+              left: Math.min(Math.max(tooltip.x - 110, 8), (mountRef.current?.clientWidth ?? 400) - 240),
+              top:  Math.max(Math.min(tooltip.y - 110, (mountRef.current?.clientHeight ?? 400) - 200), 8),
             }}
           >
             <div

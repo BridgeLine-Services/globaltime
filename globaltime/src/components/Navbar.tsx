@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Globe, Gamepad2, Clock, Menu, X } from 'lucide-react';
+import { Globe, Gamepad2, Clock, Menu, X, BookOpen } from 'lucide-react';
 
 // ── Secret admin access ────────────────────────────────────────────────────
 // Tap / click the globe logo icon 5 times within 3 seconds to open the admin panel.
@@ -36,6 +36,7 @@ export const Navbar: React.FC = () => {
     { to: '/',      label: 'Home',        icon: <Globe    size={16} /> },
     { to: '/world', label: 'World Clock', icon: <Clock    size={16} /> },
     { to: '/games', label: 'Mini Games',  icon: <Gamepad2 size={16} /> },
+    { to: '/blog',  label: 'Blog',        icon: <BookOpen size={16} /> },
   ];
 
   return (

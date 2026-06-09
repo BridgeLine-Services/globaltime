@@ -7,6 +7,8 @@ import { HomePage } from './pages/HomePage';
 import { WorldClockPage } from './pages/WorldClockPage';
 import { CountryPage } from './pages/CountryPage';
 import { GamesPage } from './pages/GamesPage';
+import { BlogPage } from './pages/BlogPage';
+import { AIChatbot } from './components/AIChatbot';
 
 // Original games
 const ReactionGame  = lazy(() => import('./games/ReactionGame').then(m => ({ default: m.ReactionGame })));
@@ -50,10 +52,12 @@ export default function App() {
           <Route path="/games/quiz"       element={<Suspense fallback={<GameFallback />}><TimezoneQuiz /></Suspense>} />
           <Route path="/games/snake"      element={<Suspense fallback={<GameFallback />}><SnakeGame /></Suspense>} />
           <Route path="/games/color"      element={<Suspense fallback={<GameFallback />}><ColorMatch /></Suspense>} />
+          <Route path="/blog" element={<BlogPage />} />
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
         </Routes>
         <Footer />
+        <AIChatbot />
       </div>
     </BrowserRouter>
   );
