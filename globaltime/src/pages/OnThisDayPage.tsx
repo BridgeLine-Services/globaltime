@@ -134,6 +134,21 @@ export function OnThisDayPage() {
     title: `On This Day, ${viewDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — World History Facts | World Clock`,
     description: `Discover what happened on this day in history and fascinating facts about what\'s happening around the world right now, hour by hour.`,
     canonical: `${SITE}/on-this-day`,
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      'name': 'On This Day in History — World Facts',
+      'description': 'Discover what happened on this day in history and fascinating facts about what\'s happening around the world right now.',
+      'url': `${SITE}/on-this-day`,
+      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'World Clock' },
+      'breadcrumb': {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home',        'item': SITE },
+          { '@type': 'ListItem', 'position': 2, 'name': 'On This Day', 'item': `${SITE}/on-this-day` },
+        ],
+      },
+    },
   });
 
   // Live clock
