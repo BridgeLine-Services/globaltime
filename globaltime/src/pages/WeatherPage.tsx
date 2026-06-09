@@ -246,6 +246,21 @@ export function WeatherPage() {
     title: 'World Weather — Global Temperatures & 14-Day Forecast | World Clock',
     description: 'Live weather conditions and 14-day forecasts for cities around the world. Current temperature, humidity, wind, UV index, hourly and daily forecasts.',
     canonical: `${SITE}/weather`,
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      'name': 'World Weather — Global Temperatures & 14-Day Forecast',
+      'description': 'Live weather conditions and 14-day forecasts for cities around the world. Current temperature, humidity, wind, UV index, hourly and daily forecasts.',
+      'url': `${SITE}/weather`,
+      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'World Clock' },
+      'breadcrumb': {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home',    'item': SITE },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Weather', 'item': `${SITE}/weather` },
+        ],
+      },
+    },
   });
 
   const [unit, setUnit] = useState<'C' | 'F'>('C');
