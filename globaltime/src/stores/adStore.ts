@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware';
 export interface AdSlot {
   id: string;
   name: string;
-  position: 'header' | 'sidebar' | 'footer' | 'mid-page' | 'floating' | 'game';
+  position: 'header' | 'sidebar' | 'footer' | 'mid-page' | 'floating' | 'game' | 'legal' | 'weather' | 'on-this-day' | 'faq';
   type: 'image' | 'text' | 'embed';
   content: string;
   link?: string;

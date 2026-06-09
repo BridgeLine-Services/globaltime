@@ -8,6 +8,10 @@ import { WorldClockPage } from './pages/WorldClockPage';
 import { CountryPage } from './pages/CountryPage';
 import { GamesPage } from './pages/GamesPage';
 import { BlogPage } from './pages/BlogPage';
+import { LegalPage } from './pages/LegalPage';
+import { WeatherPage } from './pages/WeatherPage';
+import { OnThisDayPage } from './pages/OnThisDayPage';
+import { FAQPage } from './pages/FAQPage';
 import { AIChatbot } from './components/AIChatbot';
 
 // Original games
@@ -74,6 +78,11 @@ export default function App() {
           <Route path="/games/chronoword"     element={<Suspense fallback={<GameFallback />}><ChronoWord /></Suspense>} />
           <Route path="/games/countdown"      element={<Suspense fallback={<GameFallback />}><CountdownTimer /></Suspense>} />
           <Route path="/games/minesweeper"    element={<Suspense fallback={<GameFallback />}><Minesweeper /></Suspense>} />
+          {/* New pages */}
+          <Route path="/legal"        element={<LegalPage />} />
+          <Route path="/weather"      element={<WeatherPage />} />
+          <Route path="/on-this-day"  element={<OnThisDayPage />} />
+          <Route path="/faq"          element={<FAQPage />} />
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
         </Routes>

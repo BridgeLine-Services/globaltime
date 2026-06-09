@@ -192,16 +192,19 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       group.add(dot);
       // dot added via hitSphere below
 
-      // Large transparent hit-sphere for easier clicking (must stay visible for raycasting)
+      // Large hit-sphere: opacity 0.001 keeps it in scene graph for raycasting
+      // depthTest:true (default) ensures it participates in depth sorting correctly
       const hitSphere = new THREE.Mesh(
-        new THREE.SphereGeometry(0.075, 6, 6),
-        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.0, depthWrite: false, depthTest: false }),
+        new THREE.SphereGeometry(0.08, 8, 8),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001, depthWrite: false }),
       );
       hitSphere.position.copy(pos);
-      hitSphere.renderOrder = 999;
       hitSphere.userData = { type: 'landmark', landmark: lm };
       group.add(hitSphere);
+      // Also add the visible dot so clicking directly on it works too
+      dot.userData = { type: 'landmark', landmark: lm };
       lMarkers.push(hitSphere);
+      lMarkers.push(dot);
 
       const ring = new THREE.Mesh(
         new THREE.RingGeometry(0.026, 0.036, 20),
@@ -392,6 +395,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     );
     const ray = new THREE.Raycaster();
     ray.params.Mesh = {};
+    ray.params.Points = { threshold: 0.1 };
     ray.setFromCamera(mouse, cameraRef.current);
 
     const lmHits = ray.intersectObjects(lMarkersRef.current, true);

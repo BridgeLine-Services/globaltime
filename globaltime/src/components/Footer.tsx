@@ -26,9 +26,9 @@ export const Footer: React.FC = () => {
             </p>
           </div>
           <div>
-            <h3 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">Navigation</h3>
+            <h3 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">Explore</h3>
             <div className="space-y-2">
-              {[['/', 'Home'], ['/world', 'World Clock'], ['/games', 'Mini Games']].map(([to, label]) => (
+              {[['/', 'Home'], ['/world', 'World Clock'], ['/games', 'Mini Games'], ['/blog', 'Blog'], ['/weather', 'World Weather'], ['/on-this-day', 'On This Day'], ['/faq', 'FAQ']].map(([to, label]) => (
                 <Link key={to} to={to} className="block text-white/40 hover:text-cyan-400 text-sm transition-colors">{label}</Link>
               ))}
             </div>
@@ -55,8 +55,12 @@ export const Footer: React.FC = () => {
           </div>
         </div>
         <div className="border-t border-white/10 pt-4 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-white/20 text-xs">© 2025 WorldClock.live — Real-time global time for every country</p>
-          <p className="text-white/20 text-xs">Built with ❤️ for time travelers worldwide</p>
+          <p className="text-white/20 text-xs">© 2026 World Clock — Real-time global time for every country</p>
+          <div className="flex flex-wrap items-center gap-4">
+            {[['/legal#privacy', 'Privacy Policy'], ['/legal#terms', 'Terms'], ['/legal#advertising', 'Advertising'], ['/legal#donotsell', 'Do Not Sell My Info'], ['/legal#privacy-settings', 'Privacy Settings']].map(([to, label]) => (
+              <Link key={to} to={to} className="text-white/20 hover:text-white/40 text-xs transition-colors">{label}</Link>
+            ))}
+          </div>
         </div>
       </div>
     </footer>
