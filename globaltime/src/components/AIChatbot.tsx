@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, X, Send, Globe, ChevronDown, RotateCcw, Bot, User, Loader2 } from 'lucide-react';
 import { COUNTRIES } from '../data/countries';
+import { useLangStore, injectGoogleTranslate } from '../stores/langStore';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 interface Message { id: string; role: 'user' | 'assistant'; text: string; ts: number; lang?: string; }
@@ -210,6 +211,7 @@ async function detectLanguage(text: string): Promise<string> {
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export const AIChatbot: React.FC = () => {
+  const { setLang: setSiteLang } = useLangStore();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([{
     id: 'welcome',
@@ -221,6 +223,14 @@ export const AIChatbot: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [lang, setLang] = useState<Lang>(LANGUAGES[0]);
   const [showLangMenu, setShowLangMenu] = useState(false);
+  
+  // Sync language change to site-wide translator
+  const handleLangChange = (l: Lang) => {
+    setLang(l);
+    setShowLangMenu(false);
+    setSiteLang(l);
+    injectGoogleTranslate(l.code);
+  };
   const [autoDetected, setAutoDetected] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -401,7 +411,7 @@ export const AIChatbot: React.FC = () => {
                       className="absolute top-full right-0 mt-1 w-44 bg-[#0e0e24] border border-white/15 rounded-xl shadow-2xl overflow-hidden z-10 max-h-64 overflow-y-auto"
                     >
                       {LANGUAGES.map(l => (
-                        <button key={l.code} onClick={() => { setLang(l); setShowLangMenu(false); }}
+                        <button key={l.code} onClick={() => handleLangChange(l)}
                           className={`w-full flex items-center gap-2 px-3 py-2 text-xs hover:bg-white/10 transition-colors ${lang.code === l.code ? 'text-cyan-400 bg-cyan-400/10' : 'text-white/70'}`}>
                           <span>{l.flag}</span><span>{l.label}</span>
                         </button>

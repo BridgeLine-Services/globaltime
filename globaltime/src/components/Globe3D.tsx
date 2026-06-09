@@ -44,6 +44,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const groupRef    = useRef<THREE.Group | null>(null);
   const cMarkersRef = useRef<THREE.Mesh[]>([]);
   const lMarkersRef = useRef<THREE.Mesh[]>([]);
+  const pulseRingsRef = useRef<THREE.Mesh[]>([]);
   const rafRef      = useRef<number>(0);
 
   // Drag / momentum
@@ -144,6 +145,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     }
 
     // Country markers
+    pulseRingsRef.current = [];
     const cMarkers: THREE.Mesh[] = [];
     countries.forEach(c => {
       const pos = latLngToVec3(c.lat, c.lng, 1.018);
@@ -164,6 +166,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       ring.lookAt(new THREE.Vector3(0, 0, 0));
       ring.userData = { pulse: true, speed: 0.04 + Math.random() * 0.03, base: 0.2 };
       group.add(ring);
+      pulseRingsRef.current.push(ring);
     });
     cMarkersRef.current = cMarkers;
 
@@ -187,15 +190,15 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       dot.position.copy(pos);
       dot.userData = { type: 'landmark', landmark: lm };
       group.add(dot);
-      lMarkers.push(dot);
+      // dot added via hitSphere below
 
-      // Invisible larger hit-sphere — visible:false but still raycasts
+      // Large transparent hit-sphere for easier clicking (must stay visible for raycasting)
       const hitSphere = new THREE.Mesh(
-        new THREE.SphereGeometry(0.072, 6, 6),
-        new THREE.MeshBasicMaterial({ color: 0xffffff }),
+        new THREE.SphereGeometry(0.075, 6, 6),
+        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.0, depthWrite: false, depthTest: false }),
       );
       hitSphere.position.copy(pos);
-      hitSphere.visible = false;
+      hitSphere.renderOrder = 999;
       hitSphere.userData = { type: 'landmark', landmark: lm };
       group.add(hitSphere);
       lMarkers.push(hitSphere);
@@ -208,6 +211,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       ring.lookAt(new THREE.Vector3(0, 0, 0));
       ring.userData = { pulse: true, speed: 0.03 + Math.random() * 0.04, base: 0.35 };
       group.add(ring);
+      pulseRingsRef.current.push(ring);
     });
     lMarkersRef.current = lMarkers;
 
@@ -236,16 +240,15 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
         group.rotation.x = Math.max(-X_LIMIT, Math.min(X_LIMIT, group.rotation.x));
       }
 
-      // Pulse rings — throttled to every 2 frames for performance
+      // Pulse rings — use pre-cached array, throttled every 2 frames
       if (frame % 2 === 0) {
-        group.children.forEach(child => {
-          const ud = child.userData;
-          if (ud?.pulse) {
-            const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
-            const base = ud.base ?? 0.2;
-            mat.opacity = base + Math.sin(frame * (ud.speed ?? 0.05)) * (base * 0.85);
-          }
-        });
+        const rings = pulseRingsRef.current;
+        for (let ri = 0; ri < rings.length; ri++) {
+          const ud = rings[ri].userData;
+          const mat = rings[ri].material as THREE.MeshBasicMaterial;
+          const base = ud.base ?? 0.2;
+          mat.opacity = base + Math.sin(frame * (ud.speed ?? 0.05)) * (base * 0.85);
+        }
       }
 
       renderer.render(scene, camera);
@@ -380,7 +383,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
 
   // ── Raycasting ─────────────────────────────────────────────────────────────
   const handleClick = useCallback((e: React.MouseEvent) => {
-    if (movedPx.current > 12) return;
+    if (movedPx.current > 8) return;
     if (!mountRef.current || !cameraRef.current) return;
     const rect  = mountRef.current.getBoundingClientRect();
     const mouse = new THREE.Vector2(
@@ -391,7 +394,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     ray.params.Mesh = {};
     ray.setFromCamera(mouse, cameraRef.current);
 
-    const lmHits = ray.intersectObjects(lMarkersRef.current, false);
+    const lmHits = ray.intersectObjects(lMarkersRef.current, true);
     if (lmHits.length > 0) {
       const lm = lmHits[0].object.userData.landmark as Landmark;
       setTooltip({ landmark: lm, x: e.clientX - rect.left, y: e.clientY - rect.top });

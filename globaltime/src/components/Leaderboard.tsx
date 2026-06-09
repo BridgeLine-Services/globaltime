@@ -83,7 +83,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ game, unit, formatScor
                   <span className={`text-sm font-medium truncate ${isMe ? 'text-cyan-300' : 'text-white/90'}`}>{entry.name}</span>
                   {isMe && <span className="text-xs text-cyan-400/60">(you)</span>}
                   {entry.isPersonalBest && (
-                    <Sparkles size={10} className="text-yellow-400 flex-shrink-0" title="Personal Best!" />
+                    <Sparkles size={10} className="text-yellow-400 flex-shrink-0" />
                   )}
                 </div>
                 <span className="text-white/25 text-xs">{new Date(entry.timestamp).toLocaleDateString()}</span>

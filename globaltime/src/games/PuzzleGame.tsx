@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
-import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
+import { Leaderboard } from '../components/Leaderboard';
 
 const SIZE = 4;
 const N = SIZE * SIZE;
