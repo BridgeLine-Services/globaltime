@@ -156,7 +156,7 @@ export const BlogPage: React.FC = () => {
           <div className="flex items-center justify-center gap-2 mt-3 text-xs text-white/30">
             <RefreshCw size={11} className="animate-spin" style={{ animationDuration: '8s' }} />
             <span>Next refresh in <span className="text-cyan-400 font-mono">{countdown}</span></span>
-            <button onClick={refreshPosts}
+            <button onClick={() => refreshPosts(true)}
               className="ml-2 px-2 py-0.5 rounded-full border border-white/10 hover:border-cyan-400/30 hover:text-white/60 transition-all">
               Refresh now
             </button>

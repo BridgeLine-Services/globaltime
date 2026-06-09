@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const DURATION = 10;
 const getBest = () => parseFloat(localStorage.getItem('clicker_best') || '0');
@@ -106,7 +107,9 @@ export const ClickerGame: React.FC = () => {
         )}
 
         <AdSlotComponent position="game" index={0} className="mt-6" />
-        <AdSlotComponent position="game" index={0} className="mt-4" />
+        
+        <Leaderboard game="clicker" unit=" CPS" className="mt-4" />
+<AdSlotComponent position="game" index={0} className="mt-4" />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const EMOJIS = ['🌍','🌎','🌏','🗺️','🧭','🌙','⭐','☀️','🌊','🏔️','🌴','🎮','⚡','🎯','🏆','💎'];
 
@@ -140,7 +141,9 @@ export const MemoryGame: React.FC = () => {
         )}
 
         <AdSlotComponent position="game" index={0} className="mb-4" />
-        <AdSlotComponent position="game" index={0} className="mb-4" />
+        
+        <Leaderboard game="memory" unit=" pts" className="mt-4" />
+<AdSlotComponent position="game" index={0} className="mb-4" />
       </div>
     </div>
   );

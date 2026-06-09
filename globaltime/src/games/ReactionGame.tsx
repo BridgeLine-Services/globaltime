@@ -1,6 +1,7 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AdSlotComponent } from '../components/AdSlot';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 import { ArrowLeft, Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -17,6 +18,7 @@ export const ReactionGame: React.FC = () => {
   const [reactionTime, setReactionTime] = useState<number | null>(null);
   const [startTime, setStartTime] = useState(0);
   const [scores, setScores] = useState<number[]>([]);
+  const [showSubmit, setShowSubmit] = useState(false);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const start = useCallback(() => {
@@ -131,6 +133,11 @@ export const ReactionGame: React.FC = () => {
           </div>
         )}
 
+        {showSubmit && scores.length > 0 && (
+          <SubmitScoreModal game="reaction" score={Math.min(...scores)} unit="ms"
+            formatScore={(s) => `${s}ms`} onDone={() => setShowSubmit(false)} />
+        )}
+        <Leaderboard game="reaction" unit="ms" formatScore={(s) => `${s}ms`} className="mt-4" />
         <AdSlotComponent position="game" index={0} className="mt-4" />
       </div>
     </div>

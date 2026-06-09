@@ -113,7 +113,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
 
     // Earth sphere
     group.add(new THREE.Mesh(
-      new THREE.SphereGeometry(1, 64, 64),
+      new THREE.SphereGeometry(1, 48, 48),
       new THREE.MeshPhongMaterial({
         map: colorTex, normalMap: normalTex, specularMap: specTex,
         specular: new THREE.Color(0x336699), shininess: 35,
@@ -122,24 +122,24 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
 
     // Inner atmosphere
     group.add(new THREE.Mesh(
-      new THREE.SphereGeometry(1.015, 40, 40),
+      new THREE.SphereGeometry(1.015, 32, 32),
       new THREE.MeshPhongMaterial({ color: 0x4488ff, transparent: true, opacity: 0.08, side: THREE.FrontSide }),
     ));
 
     // Outer halo (stays in scene — doesn't rotate)
     scene.add(new THREE.Mesh(
-      new THREE.SphereGeometry(1.12, 40, 40),
+      new THREE.SphereGeometry(1.12, 32, 32),
       new THREE.MeshPhongMaterial({ color: 0x2255cc, transparent: true, opacity: 0.055, side: THREE.BackSide }),
     ));
 
     // Grid lines
     const lineMat = new THREE.LineBasicMaterial({ color: 0x004488, transparent: true, opacity: 0.18 });
     for (let lat = -60; lat <= 60; lat += 30) {
-      const pts = Array.from({ length: 73 }, (_, i) => latLngToVec3(lat, i * 5 - 180, 1.003));
+      const pts = Array.from({ length: 37 }, (_, i) => latLngToVec3(lat, i * 10 - 180, 1.003));
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
     }
     for (let lng = 0; lng < 360; lng += 30) {
-      const pts = Array.from({ length: 37 }, (_, i) => latLngToVec3(i * 5 - 90, lng - 180, 1.003));
+      const pts = Array.from({ length: 19 }, (_, i) => latLngToVec3(i * 10 - 90, lng - 180, 1.003));
       group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), lineMat));
     }
 
@@ -189,12 +189,13 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       group.add(dot);
       lMarkers.push(dot);
 
-      // Invisible larger hit-sphere so small dots are easy to click
+      // Invisible larger hit-sphere — visible:false but still raycasts
       const hitSphere = new THREE.Mesh(
-        new THREE.SphereGeometry(0.062, 8, 8),
-        new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
+        new THREE.SphereGeometry(0.072, 6, 6),
+        new THREE.MeshBasicMaterial({ color: 0xffffff }),
       );
       hitSphere.position.copy(pos);
+      hitSphere.visible = false;
       hitSphere.userData = { type: 'landmark', landmark: lm };
       group.add(hitSphere);
       lMarkers.push(hitSphere);
@@ -235,15 +236,17 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
         group.rotation.x = Math.max(-X_LIMIT, Math.min(X_LIMIT, group.rotation.x));
       }
 
-      // Pulse rings
-      group.children.forEach(child => {
-        const ud = child.userData;
-        if (ud?.pulse) {
-          const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
-          const base = ud.base ?? 0.2;
-          mat.opacity = base + Math.sin(frame * (ud.speed ?? 0.05)) * (base * 0.85);
-        }
-      });
+      // Pulse rings — throttled to every 2 frames for performance
+      if (frame % 2 === 0) {
+        group.children.forEach(child => {
+          const ud = child.userData;
+          if (ud?.pulse) {
+            const mat = (child as THREE.Mesh).material as THREE.MeshBasicMaterial;
+            const base = ud.base ?? 0.2;
+            mat.opacity = base + Math.sin(frame * (ud.speed ?? 0.05)) * (base * 0.85);
+          }
+        });
+      }
 
       renderer.render(scene, camera);
     };
@@ -385,9 +388,10 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       -((e.clientY - rect.top)  / rect.height) * 2 + 1,
     );
     const ray = new THREE.Raycaster();
+    ray.params.Mesh = {};
     ray.setFromCamera(mouse, cameraRef.current);
 
-    const lmHits = ray.intersectObjects(lMarkersRef.current);
+    const lmHits = ray.intersectObjects(lMarkersRef.current, false);
     if (lmHits.length > 0) {
       const lm = lmHits[0].object.userData.landmark as Landmark;
       setTooltip({ landmark: lm, x: e.clientX - rect.left, y: e.clientY - rect.top });

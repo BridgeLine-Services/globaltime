@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Trophy, Zap, Brain, MousePointer, Grid3X3, Play, Keyboard, Globe, Gamepad2, Palette } from 'lucide-react';
+import { ArrowRight, Trophy, Zap, Brain, MousePointer, Grid3X3, Play, Keyboard, Globe, Gamepad2, Palette, Calculator, Flag, MapPin, Waves, Hash, Shuffle, XCircle, Clock, Timer, Bomb } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
 import { useSEO } from '../hooks/useSEO';
 

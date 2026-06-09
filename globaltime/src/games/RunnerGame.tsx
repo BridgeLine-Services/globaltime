@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const W = 600, H = 200, GROUND = 160, GRAVITY = 0.6, JUMP = -12;
 
@@ -214,7 +215,9 @@ export const RunnerGame: React.FC = () => {
         </div>
 
         <AdSlotComponent position="game" index={0} className="mt-4" />
-        <AdSlotComponent position="game" index={0} className="mt-4" />
+        
+        <Leaderboard game="runner" unit=" pts" className="mt-4" />
+<AdSlotComponent position="game" index={0} className="mt-4" />
       </div>
     </div>
   );

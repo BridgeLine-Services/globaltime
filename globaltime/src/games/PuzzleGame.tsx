@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const SIZE = 4;
 const N = SIZE * SIZE;
@@ -122,7 +123,9 @@ export const PuzzleGame: React.FC = () => {
         )}
 
         <AdSlotComponent position="game" index={0} className="mb-4" />
-        <AdSlotComponent position="game" index={0} />
+        
+        <Leaderboard game="puzzle" unit=" moves" className="mt-4" />
+<AdSlotComponent position="game" index={0} />
       </div>
     </div>
   );

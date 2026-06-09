@@ -21,6 +21,17 @@ const TypingGame    = lazy(() => import('./games/TypingGame').then(m => ({ defau
 const TimezoneQuiz  = lazy(() => import('./games/TimezoneQuiz').then(m => ({ default: m.TimezoneQuiz })));
 const SnakeGame     = lazy(() => import('./games/SnakeGame').then(m => ({ default: m.SnakeGame })));
 const ColorMatch    = lazy(() => import('./games/ColorMatch').then(m => ({ default: m.ColorMatch })));
+
+const MathBlitz     = lazy(() => import('./games/MathBlitz').then(m => ({ default: m.MathBlitz })));
+const FlagQuiz      = lazy(() => import('./games/FlagQuiz').then(m => ({ default: m.FlagQuiz })));
+const CapitalsQuiz  = lazy(() => import('./games/CapitalsQuiz').then(m => ({ default: m.CapitalsQuiz })));
+const SimonWave     = lazy(() => import('./games/SimonWave').then(m => ({ default: m.SimonWave })));
+const NumberMemory  = lazy(() => import('./games/NumberMemory').then(m => ({ default: m.NumberMemory })));
+const WordScramble  = lazy(() => import('./games/WordScramble').then(m => ({ default: m.WordScramble })));
+const TicTacToe     = lazy(() => import('./games/TicTacToe').then(m => ({ default: m.TicTacToe })));
+const ChronoWord    = lazy(() => import('./games/ChronoWord').then(m => ({ default: m.ChronoWord })));
+const CountdownTimer= lazy(() => import('./games/CountdownTimer').then(m => ({ default: m.CountdownTimer })));
+const Minesweeper   = lazy(() => import('./games/Minesweeper').then(m => ({ default: m.Minesweeper })));
 // Admin
 const AdminPanel    = lazy(() => import('./pages/AdminPanel').then(m => ({ default: m.AdminPanel })));
 
@@ -53,6 +64,16 @@ export default function App() {
           <Route path="/games/snake"      element={<Suspense fallback={<GameFallback />}><SnakeGame /></Suspense>} />
           <Route path="/games/color"      element={<Suspense fallback={<GameFallback />}><ColorMatch /></Suspense>} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/games/mathblitz"     element={<Suspense fallback={<GameFallback />}><MathBlitz /></Suspense>} />
+          <Route path="/games/flagquiz"       element={<Suspense fallback={<GameFallback />}><FlagQuiz /></Suspense>} />
+          <Route path="/games/capitals"       element={<Suspense fallback={<GameFallback />}><CapitalsQuiz /></Suspense>} />
+          <Route path="/games/simon"          element={<Suspense fallback={<GameFallback />}><SimonWave /></Suspense>} />
+          <Route path="/games/numbermemory"   element={<Suspense fallback={<GameFallback />}><NumberMemory /></Suspense>} />
+          <Route path="/games/wordscramble"   element={<Suspense fallback={<GameFallback />}><WordScramble /></Suspense>} />
+          <Route path="/games/tictactoe"      element={<Suspense fallback={<GameFallback />}><TicTacToe /></Suspense>} />
+          <Route path="/games/chronoword"     element={<Suspense fallback={<GameFallback />}><ChronoWord /></Suspense>} />
+          <Route path="/games/countdown"      element={<Suspense fallback={<GameFallback />}><CountdownTimer /></Suspense>} />
+          <Route path="/games/minesweeper"    element={<Suspense fallback={<GameFallback />}><Minesweeper /></Suspense>} />
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
         </Routes>
