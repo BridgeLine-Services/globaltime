@@ -9,6 +9,7 @@
     <title>World Clock — Live Time in Every Country on Earth</title>
     <meta name="description" content="It's always the right time somewhere. Find the exact local time in 195 countries instantly — interactive 3D globe, timezone explorer, and live clocks. No guessing, no math." />
     <meta name="keywords" content="world clock, current time, time zone, timezone, international time, live clock, what time is it, world time, UTC offset, time converter" />
+    <meta name="author" content="World Clock" />
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <link rel="canonical" href="https://globaltime-pi.vercel.app/" />
 
@@ -31,16 +32,23 @@
 
     <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@worldclocklive" />
     <meta name="twitter:title" content="World Clock — Live Time in Every Country on Earth" />
     <meta name="twitter:description" content="It's always the right time somewhere. Find the exact local time in 195 countries — interactive globe, live clocks." />
     <meta name="twitter:image" content="https://globaltime-pi.vercel.app/og-image.png" />
+    <meta name="twitter:image:alt" content="World Clock — Live time for every country on Earth" />
 
-    <!-- Favicon suite (ICO + PNG for all platforms) -->
+    <!-- Favicon suite (ICO + PNG + SVG for all platforms) -->
     <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Preconnect for performance (critical third-party origins) -->
+    <link rel="preconnect" href="https://pagead2.googlesyndication.com" />
+    <link rel="preconnect" href="https://googleads.g.doubleclick.net" />
 
     <!-- Self-hosted fonts (EU GDPR compliant, faster — no Google DNS lookup) -->
     <link rel="preload" href="/fonts/fonts.css" as="style" onload="this.onload=null;this.rel='stylesheet'" />
@@ -83,7 +91,13 @@
         "url": "https://globaltime-pi.vercel.app/favicon-512.png",
         "width": 512,
         "height": 512
-      }
+      },
+      "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer support",
+        "email": "privacy@worldclock.live"
+      },
+      "sameAs": []
     }
     </script>
 
