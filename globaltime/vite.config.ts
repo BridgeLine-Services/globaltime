@@ -11,6 +11,10 @@ export default defineConfig({
     },
   },
   build: {
+    // Aggressive minification
+    minify: 'esbuild',
+    // Tree-shake everything
+    reportCompressedSize: false,
     // Target modern browsers — smaller, faster bundles
     target: 'es2020',
     // Inline small assets (<4kb) as base64 to reduce HTTP requests
@@ -23,16 +27,20 @@ export default defineConfig({
       output: {
         // Strategic chunk splitting: each chunk loads only when needed
         manualChunks(id) {
-          // Three.js is only needed on homepage — isolate it
+          // React core — always needed, load first
+          if (id.includes('node_modules/react-dom') || id.includes('node_modules/react/')) return 'react';
+          // Three.js is only needed on homepage globe — isolate it
           if (id.includes('node_modules/three')) return 'three';
-          // Router loaded on first navigation
+          // Router
           if (id.includes('node_modules/react-router-dom') || id.includes('node_modules/react-router')) return 'router';
-          // Framer Motion only for animated pages
+          // Framer Motion — split into core vs heavy
           if (id.includes('node_modules/framer-motion')) return 'motion';
           // Zustand state management
           if (id.includes('node_modules/zustand')) return 'store';
           // Lucide icons are large — isolate them
           if (id.includes('node_modules/lucide-react')) return 'icons';
+          // @vercel/analytics — non-critical
+          if (id.includes('node_modules/@vercel')) return 'vendor-vercel';
         },
         // Stable file names improve CDN cache hit rates
         entryFileNames: 'assets/[name]-[hash].js',
