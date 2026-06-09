@@ -51,6 +51,7 @@ export default function App() {
       <div className="min-h-screen bg-[#0a0a1a]">
         <Navbar />
         <Analytics />
+        <main id="main-content">
         <Routes>
           <Route path="/"                  element={<HomePage />} />
           <Route path="/world"             element={<WorldClockPage />} />
@@ -86,6 +87,7 @@ export default function App() {
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
         </Routes>
+        </main>
         <Footer />
         <AIChatbot />
       </div>
