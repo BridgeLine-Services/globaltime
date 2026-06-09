@@ -264,6 +264,21 @@ export function LegalPage() {
     description: 'World Clock legal information including Privacy Policy, Terms & Conditions, Advertising Policy, Disclaimer, Link Policy, Do Not Sell My Info, and Privacy Settings.',
     canonical: `${SITE}/legal`,
     noindex: false,
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      'name': 'Legal — Privacy Policy, Terms & Advertising',
+      'description': 'Privacy policy, terms of service, advertising policy, and disclaimer for World Clock.',
+      'url': `${SITE}/legal`,
+      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'World Clock' },
+      'breadcrumb': {
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home',  'item': SITE },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Legal', 'item': `${SITE}/legal` },
+        ],
+      },
+    },
   });
 
   const [open, setOpen] = useState<string | null>('privacy');
