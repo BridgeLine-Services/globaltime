@@ -399,6 +399,7 @@ export const AIChatbot: React.FC = () => {
               {/* Language selector */}
               <div className="relative">
                 <button onClick={() => setShowLangMenu(v => !v)}
+                  aria-label="Select language"
                   className="flex items-center gap-1.5 px-2 py-1 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-xs text-white/60 border border-white/10">
                   <Globe size={12} />
                   <span>{lang.flag}</span>
@@ -421,10 +422,10 @@ export const AIChatbot: React.FC = () => {
                 </AnimatePresence>
               </div>
 
-              <button onClick={clearChat} className="text-white/30 hover:text-white/70 transition-colors p-1 rounded-lg hover:bg-white/10" title="Clear chat">
+              <button onClick={clearChat} aria-label="Clear chat" className="text-white/30 hover:text-white/70 transition-colors p-1 rounded-lg hover:bg-white/10" title="Clear chat">
                 <RotateCcw size={14} />
               </button>
-              <button onClick={() => setOpen(false)} className="text-white/30 hover:text-white/70 transition-colors p-1 rounded-lg hover:bg-white/10">
+              <button onClick={() => setOpen(false)} aria-label="Close chat" className="text-white/30 hover:text-white/70 transition-colors p-1 rounded-lg hover:bg-white/10">
                 <X size={16} />
               </button>
             </div>
@@ -515,6 +516,7 @@ export const AIChatbot: React.FC = () => {
                   }}
                 />
                 <button onClick={sendMessage} disabled={!input.trim() || loading}
+                  aria-label="Send message"
                   className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center disabled:opacity-30 disabled:cursor-not-allowed hover:shadow-[0_0_12px_rgba(0,212,255,0.4)] transition-all flex-shrink-0">
                   {loading ? <Loader2 size={14} className="text-white animate-spin" /> : <Send size={14} className="text-white" />}
                 </button>
