@@ -21,7 +21,7 @@ export const Footer: React.FC = () => {
               </div>
               <span className="text-white font-bold">WorldClock.live</span>
             </div>
-            <p className="text-white/40 text-sm leading-relaxed">
+            <p className="text-white/60 text-sm leading-relaxed">
               Real-time world clocks with millisecond precision. Every country on Earth, live.
             </p>
           </div>
@@ -29,7 +29,7 @@ export const Footer: React.FC = () => {
             <h3 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">Explore</h3>
             <div className="space-y-2">
               {[['/', 'Home'], ['/world', 'World Clock'], ['/games', 'Mini Games'], ['/blog', 'Blog'], ['/weather', 'World Weather'], ['/on-this-day', 'On This Day'], ['/faq', 'FAQ']].map(([to, label]) => (
-                <Link key={to} to={to} className="block text-white/40 hover:text-cyan-400 text-sm transition-colors">{label}</Link>
+                <Link key={to} to={to} className="block text-white/60 hover:text-cyan-400 text-sm transition-colors">{label}</Link>
               ))}
             </div>
           </div>
@@ -37,7 +37,7 @@ export const Footer: React.FC = () => {
             <h3 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">Popular Countries</h3>
             <div className="space-y-1">
               {featured.slice(0, 8).map(c => (
-                <Link key={c.slug} to={`/time/${c.slug}`} className="block text-white/40 hover:text-cyan-400 text-sm transition-colors">
+                <Link key={c.slug} to={`/time/${c.slug}`} className="block text-white/60 hover:text-cyan-400 text-sm transition-colors">
                   {c.flag} {c.name}
                 </Link>
               ))}
@@ -47,7 +47,7 @@ export const Footer: React.FC = () => {
             <h3 className="text-white/60 text-xs font-semibold uppercase tracking-wider mb-3">More Countries</h3>
             <div className="space-y-1">
               {featured.slice(8, 16).map(c => (
-                <Link key={c.slug} to={`/time/${c.slug}`} className="block text-white/40 hover:text-cyan-400 text-sm transition-colors">
+                <Link key={c.slug} to={`/time/${c.slug}`} className="block text-white/60 hover:text-cyan-400 text-sm transition-colors">
                   {c.flag} {c.name}
                 </Link>
               ))}
@@ -55,10 +55,10 @@ export const Footer: React.FC = () => {
           </div>
         </div>
         <div className="border-t border-white/10 pt-4 flex flex-col md:flex-row items-center justify-between gap-3">
-          <p className="text-white/20 text-xs">© 2026 World Clock — Real-time global time for every country</p>
+          <p className="text-white/50 text-xs">© 2026 World Clock — Real-time global time for every country</p>
           <div className="flex flex-wrap items-center gap-4">
             {[['/legal#privacy', 'Privacy Policy'], ['/legal#terms', 'Terms'], ['/legal#advertising', 'Advertising'], ['/legal#donotsell', 'Do Not Sell My Info'], ['/legal#privacy-settings', 'Privacy Settings']].map(([to, label]) => (
-              <Link key={to} to={to} className="text-white/20 hover:text-white/40 text-xs transition-colors">{label}</Link>
+              <Link key={to} to={to} className="text-white/50 hover:text-white/70 text-xs transition-colors">{label}</Link>
             ))}
           </div>
         </div>
