@@ -49,7 +49,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({ onSelect, placeholder = 'S
           className="flex-1 bg-transparent text-white placeholder-white/40 outline-none text-base font-display"
         />
         {query && (
-          <button onClick={() => setQuery('')} className="text-white/40 hover:text-white transition-colors">
+          <button onClick={() => setQuery('')} aria-label="Clear search" className="text-white/40 hover:text-white transition-colors">
             <X size={16} />
           </button>
         )}
