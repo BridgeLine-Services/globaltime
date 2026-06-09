@@ -15,7 +15,6 @@
 
     <!-- Google AdSense -->
     <meta name="google-adsense-account" content="ca-pub-1924565904520635" />
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1924565904520635" crossorigin="anonymous"></script>
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -120,9 +119,40 @@
       #google_translate_element { display: none !important; }
       /* Font-display: swap is set in fonts.css — no FOIT */
     </style>
+    <!-- Skip-to-content link CSS (accessibility) -->
+    <style>
+      .skip-link {
+        position: absolute;
+        top: -100%;
+        left: 0;
+        background: #00d4ff;
+        color: #0a0a1a;
+        padding: 0.5rem 1rem;
+        font-weight: 700;
+        font-size: 0.875rem;
+        z-index: 9999;
+        border-radius: 0 0 0.5rem 0;
+        text-decoration: none;
+        transition: top 0.1s;
+      }
+      .skip-link:focus { top: 0; }
+    </style>
   </head>
   <body>
+    <!-- Skip to main content (accessibility) -->
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <!-- Google AdSense: loaded after page content to avoid render-blocking -->
+    <script>
+      window.addEventListener('load', function() {
+        var s = document.createElement('script');
+        s.async = true;
+        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1924565904520635';
+        s.crossOrigin = 'anonymous';
+        s.setAttribute('fetchpriority', 'low');
+        document.body.appendChild(s);
+      });
+    </script>
   </body>
 </html>
