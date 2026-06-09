@@ -12,18 +12,18 @@ export const WorldClockPage: React.FC = () => {
   useSEO({
     title: 'World Clock — Current Time in Every Country | WorldClock.live',
     description: `Live current time for all ${COUNTRIES.length}+ countries and territories. Browse by continent, search any country, and see the exact local time with millisecond precision.`,
-    canonical: 'https://worldclock.live/world',
+    canonical: 'https://globaltime-pi.vercel.app/world',
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
       'name': 'World Clock — Current Time in Every Country',
       'description': `Real-time clocks for ${COUNTRIES.length}+ countries, live down to the millisecond.`,
-      'url': 'https://worldclock.live/world',
+      'url': 'https://globaltime-pi.vercel.app/world',
       'breadcrumb': {
         '@type': 'BreadcrumbList',
         'itemListElement': [
-          { '@type': 'ListItem', 'position': 1, 'name': 'Home',         'item': 'https://worldclock.live/' },
-          { '@type': 'ListItem', 'position': 2, 'name': 'World Clock',  'item': 'https://worldclock.live/world' },
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home',         'item': 'https://globaltime-pi.vercel.app/' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'World Clock',  'item': 'https://globaltime-pi.vercel.app/world' },
         ],
       },
     },

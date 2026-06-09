@@ -21,19 +21,19 @@ export const GamesPage: React.FC = () => {
   useSEO({
     title: 'Free Mini Games — Reaction, Memory, Typing & More | WorldClock.live',
     description: 'Play 9 free browser mini-games on WorldClock.live — reaction time test, memory flip, speed typing, timezone quiz, snake, and more. No download, instant play.',
-    canonical: 'https://worldclock.live/games',
+    canonical: 'https://globaltime-pi.vercel.app/games',
     structuredData: [
       {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         'name': 'Free Mini Games',
         'description': '9 free browser mini-games — no download, instant play.',
-        'url': 'https://worldclock.live/games',
+        'url': 'https://globaltime-pi.vercel.app/games',
         'breadcrumb': {
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home',       'item': 'https://worldclock.live/' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'Mini Games', 'item': 'https://worldclock.live/games' },
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home',       'item': 'https://globaltime-pi.vercel.app/' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'Mini Games', 'item': 'https://globaltime-pi.vercel.app/games' },
           ],
         },
       },
@@ -42,7 +42,7 @@ export const GamesPage: React.FC = () => {
         '@type': 'SoftwareApplication',
         'name': g.name,
         'description': g.desc,
-        'url': `https://worldclock.live/games/${g.slug}`,
+        'url': `https://globaltime-pi.vercel.app/games/${g.slug}`,
         'applicationCategory': 'GameApplication',
         'operatingSystem': 'Web',
         'offers': { '@type': 'Offer', 'price': '0', 'priceCurrency': 'USD' },

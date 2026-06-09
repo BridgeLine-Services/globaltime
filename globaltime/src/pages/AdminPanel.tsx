@@ -8,7 +8,7 @@ import { useAnalyticsStore } from '../stores/analyticsStore';
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'admin2025';
 
 export const AdminPanel: React.FC = () => {
-  useSEO({ title: 'Admin', description: '', canonical: 'https://worldclock.live/', noindex: true });
+  useSEO({ title: 'Admin', description: '', canonical: 'https://globaltime-pi.vercel.app/', noindex: true });
   const [password, setPassword] = useState('');
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');

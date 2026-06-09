@@ -24,20 +24,20 @@ export const CountryPage: React.FC = () => {
   useSEO(country ? {
     title: `Current Time in ${country.name} — ${country.capital} Live Clock | WorldClock.live`,
     description: `What time is it in ${country.name} right now? See the live local time in ${country.capital} (${country.timezone}, ${utcOffset}). Updated every millisecond.`,
-    canonical: `https://worldclock.live/time/${country.slug}`,
+    canonical: `https://globaltime-pi.vercel.app/time/${country.slug}`,
     structuredData: [
       {
         '@context': 'https://schema.org',
         '@type': 'WebPage',
         'name': `Current Time in ${country.name}`,
         'description': `Live local time in ${country.name} (${country.capital}). Timezone: ${country.timezone}. UTC offset: ${utcOffset}.`,
-        'url': `https://worldclock.live/time/${country.slug}`,
+        'url': `https://globaltime-pi.vercel.app/time/${country.slug}`,
         'breadcrumb': {
           '@type': 'BreadcrumbList',
           'itemListElement': [
-            { '@type': 'ListItem', 'position': 1, 'name': 'Home',         'item': 'https://worldclock.live/' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'World Clock',  'item': 'https://worldclock.live/world' },
-            { '@type': 'ListItem', 'position': 3, 'name': country.name,   'item': `https://worldclock.live/time/${country.slug}` },
+            { '@type': 'ListItem', 'position': 1, 'name': 'Home',         'item': 'https://globaltime-pi.vercel.app/' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'World Clock',  'item': 'https://globaltime-pi.vercel.app/world' },
+            { '@type': 'ListItem', 'position': 3, 'name': country.name,   'item': `https://globaltime-pi.vercel.app/time/${country.slug}` },
           ],
         },
       },
@@ -51,7 +51,7 @@ export const CountryPage: React.FC = () => {
   } : {
     title: 'Country Not Found | WorldClock.live',
     description: 'This country page was not found.',
-    canonical: 'https://worldclock.live/world',
+    canonical: 'https://globaltime-pi.vercel.app/world',
     noindex: true,
   });
 

@@ -54,7 +54,7 @@ export function useSEO({
   canonical,
   ogTitle,
   ogDescription,
-  ogImage = 'https://worldclock.live/og-image.png',
+  ogImage = 'https://globaltime-pi.vercel.app/og-image.png',
   noindex = false,
   structuredData,
 }: SEOProps) {

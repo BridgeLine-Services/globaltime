@@ -19,7 +19,7 @@ export const HomePage: React.FC = () => {
   useSEO({
     title: 'WorldClock.live — Real-Time World Clock for Every Country',
     description: 'See the exact current time in every country on Earth — live, millisecond precision. Interactive 3D globe, timezone explorer, and 150+ countries. Free.',
-    canonical: 'https://worldclock.live/',
+    canonical: 'https://globaltime-pi.vercel.app/',
   });
 
   const featured = COUNTRIES.filter(c => FEATURED_COUNTRIES.includes(c.slug));
