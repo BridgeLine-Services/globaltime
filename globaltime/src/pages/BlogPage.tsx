@@ -108,6 +108,25 @@ export const BlogPage: React.FC = () => {
     title: 'World Stories & Facts — Culture, Science, Travel & History | World Clock',
     description: 'Stranger than fiction, true everywhere. Dive into fascinating world stories — bizarre history, hidden science, wild travel facts, and cultural mysteries. Refreshed every 2 hours.',
     canonical: 'https://globaltime-pi.vercel.app/blog',
+    structuredData: [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Blog',
+        'name': 'World Stories & Facts',
+        'description': 'Fascinating world stories — bizarre history, hidden science, wild travel facts, and cultural mysteries.',
+        'url': 'https://globaltime-pi.vercel.app/blog',
+        'isPartOf': { '@type': 'WebSite', 'url': 'https://globaltime-pi.vercel.app', 'name': 'World Clock' },
+        'inLanguage': 'en-US',
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        'itemListElement': [
+          { '@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': 'https://globaltime-pi.vercel.app/' },
+          { '@type': 'ListItem', 'position': 2, 'name': 'Blog', 'item': 'https://globaltime-pi.vercel.app/blog' },
+        ],
+      },
+    ],
   });
 
   const { posts, lastRefreshed, initPosts, refreshPosts } = useBlogStore();
