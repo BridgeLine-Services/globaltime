@@ -37,7 +37,7 @@ export const GamesPage: React.FC = () => {
         '@context': 'https://schema.org',
         '@type': 'CollectionPage',
         'name': 'Free Mini Games',
-        'description': '9 free browser mini-games — no download, instant play.',
+        'description': '19 free browser mini-games — no download, instant play.',
         'url': 'https://globaltime-pi.vercel.app/games',
         'breadcrumb': {
           '@type': 'BreadcrumbList',
