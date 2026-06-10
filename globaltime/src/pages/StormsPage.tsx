@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CloudLightning, Wind, Droplets, AlertTriangle, Eye, Thermometer, ArrowDown, ArrowUp, ChevronDown, Search, Loader, Shield, Waves, Tornado, Snowflake } from 'lucide-react';
+import { CloudLightning, Wind, Droplets, AlertTriangle, Eye, Thermometer, ArrowUp, ChevronDown, Search, Loader, Shield, Tornado } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import { AdSlotComponent } from '../components/AdSlot';
 import { COUNTRIES } from '../data/countries';
@@ -109,7 +109,7 @@ function getOverallSeverity(hourly: HourlyPoint[]): 'extreme' | 'high' | 'medium
 }
 
 async function fetchStormData(lat: number, lng: number): Promise<StormData> {
-  const [forecast, marine] = await Promise.allSettled([
+  const [forecast] = await Promise.allSettled([
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}` +
       `&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability,cape,lifted_index,cloudcover` +
       `&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,windspeed_10m_max,uv_index_max,precipitation_probability_max` +
