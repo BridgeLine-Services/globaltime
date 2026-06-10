@@ -3,13 +3,14 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
-import { Leaderboard } from '../components/Leaderboard';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const DURATION = 10;
 const getBest = () => parseFloat(localStorage.getItem('clicker_best') || '0');
 
 export const ClickerGame: React.FC = () => {
   const [phase, setPhase] = useState<'idle' | 'playing' | 'done'>('idle');
+  const [showSubmit, setShowSubmit] = useState(false);
   const [clicks, setClicks] = useState(0);
   const [timeLeft, setTimeLeft] = useState(DURATION);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -42,6 +43,7 @@ export const ClickerGame: React.FC = () => {
 
   useEffect(() => {
     if (phase === 'done') {
+      setShowSubmit(true);
       const cpsNum = clicks / DURATION;
       if (cpsNum > getBest()) localStorage.setItem('clicker_best', String(cpsNum));
       scores.current = [...scores.current.slice(-4), clicks];
@@ -108,9 +110,14 @@ export const ClickerGame: React.FC = () => {
 
         <AdSlotComponent position="game" index={0} className="mt-6" />
         
+        {showSubmit && (
+          <SubmitScoreModal game="clicker" score={parseFloat(cps)} unit=" CPS"
+            formatScore={(s) => s.toFixed(2) + ' CPS'} onDone={() => setShowSubmit(false)} />
+        )}
         <Leaderboard game="clicker" unit=" CPS" className="mt-4" />
 <AdSlotComponent position="game" index={0} className="mt-4" />
       </div>
     </div>
   );
 };
+
