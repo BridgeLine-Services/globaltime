@@ -13,6 +13,8 @@ import { WeatherPage } from './pages/WeatherPage';
 import { OnThisDayPage } from './pages/OnThisDayPage';
 import { FAQPage } from './pages/FAQPage';
 import { AIChatbot } from './components/AIChatbot';
+import { SkyPage } from './pages/SkyPage';
+import { StormsPage } from './pages/StormsPage';
 
 // Original games
 const ReactionGame  = lazy(() => import('./games/ReactionGame').then(m => ({ default: m.ReactionGame })));
@@ -84,6 +86,8 @@ export default function App() {
           <Route path="/weather"      element={<WeatherPage />} />
           <Route path="/on-this-day"  element={<OnThisDayPage />} />
           <Route path="/faq"          element={<FAQPage />} />
+          <Route path="/sky"          element={<SkyPage />} />
+          <Route path="/storms"       element={<StormsPage />} />
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
         </Routes>
