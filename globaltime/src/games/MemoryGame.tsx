@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
-import { Leaderboard } from '../components/Leaderboard';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const EMOJIS = ['🌍','🌎','🌏','🗺️','🧭','🌙','⭐','☀️','🌊','🏔️','🌴','🎮','⚡','🎯','🏆','💎'];
 
@@ -23,6 +23,7 @@ export const MemoryGame: React.FC = () => {
   const [flipped, setFlipped] = useState<number[]>([]);
   const [moves, setMoves] = useState(0);
   const [won, setWon] = useState(false);
+  const [showSubmit, setShowSubmit] = useState(false);
   const [locked, setLocked] = useState(false);
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
@@ -39,6 +40,7 @@ export const MemoryGame: React.FC = () => {
       const score = Math.max(0, 1000 - moves * 10 - time * 2);
       const best = getBest();
       if (score > best) localStorage.setItem('memory_best', String(score));
+      setShowSubmit(true);
     }
   }, [won]);
 
@@ -78,6 +80,7 @@ export const MemoryGame: React.FC = () => {
     setLocked(false);
     setTime(0);
     setRunning(false);
+    setShowSubmit(false);
   };
 
   const matched = cards.filter(c => c.matched).length / 2;
@@ -142,9 +145,14 @@ export const MemoryGame: React.FC = () => {
 
         <AdSlotComponent position="game" index={0} className="mb-4" />
         
+        {showSubmit && (
+          <SubmitScoreModal game="memory" score={Math.max(0, 1000 - moves * 10 - time * 2)} unit=" pts"
+            onDone={() => setShowSubmit(false)} />
+        )}
         <Leaderboard game="memory" unit=" pts" className="mt-4" />
 <AdSlotComponent position="game" index={0} className="mb-4" />
       </div>
     </div>
   );
 };
+
