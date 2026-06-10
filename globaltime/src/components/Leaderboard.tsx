@@ -26,7 +26,7 @@ const RANK_STYLES = [
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ game, unit, formatScore, className = '' }) => {
   const { getTopEntries, clearBoard, boards, playerName, getPersonalBest } = useLeaderboardStore();
-  const entries = getTopEntries(game, 20);
+  const entries = getTopEntries(game, 75);
   const lowerIsBetter = boards[game]?.lowerIsBetter ?? false;
   const fmt = formatScore ?? ((s: number) => `${s}${unit}`);
   const myPB = playerName ? getPersonalBest(game, playerName) : null;
@@ -40,7 +40,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ game, unit, formatScor
           <span className="text-white/25 text-xs">({lowerIsBetter ? '↓ lowest' : '↑ highest'})</span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-white/25 text-xs">{entries.length}/20</span>
+          <span className="text-white/25 text-xs">{entries.length}/75</span>
           {entries.length > 0 && (
             <button onClick={() => { if (window.confirm('Clear global leaderboard?')) clearBoard(game); }}
               className="text-white/20 hover:text-white/50 transition-colors" title="Clear">
@@ -130,7 +130,7 @@ export const SubmitScoreModal: React.FC<SubmitScoreProps> = ({ game, score, unit
             </div>
           )}
           {!result.madeBoard && !result.isPersonalBest && (
-            <div className="text-white/40 text-xs mb-3">Keep playing to crack the top 20!</div>
+            <div className="text-white/40 text-xs mb-3">Keep playing to crack the top 75!</div>
           )}
           <button onClick={onDone}
             className="mt-2 px-6 py-2 rounded-xl bg-cyan-400/20 border border-cyan-400/40 text-cyan-400 font-medium hover:bg-cyan-400/30 transition-all text-sm">
@@ -174,3 +174,4 @@ export const SubmitScoreModal: React.FC<SubmitScoreProps> = ({ game, score, unit
     </motion.div>
   );
 };
+
