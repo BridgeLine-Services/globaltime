@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, RefreshCw } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
-import { Leaderboard } from '../components/Leaderboard';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const SIZE = 4;
 const N = SIZE * SIZE;
@@ -39,6 +39,7 @@ export const PuzzleGame: React.FC = () => {
   const [time, setTime] = useState(0);
   const [running, setRunning] = useState(false);
   const [won, setWon] = useState(false);
+  const [showSubmit, setShowSubmit] = useState(false);
 
   useEffect(() => {
     if (!running) return;
@@ -63,6 +64,7 @@ export const PuzzleGame: React.FC = () => {
       setRunning(false);
       const score = Math.max(0, 5000 - moves * 10 - time * 5);
       if (score > getBest()) localStorage.setItem('puzzle_best', String(score));
+      setShowSubmit(true);
     }
   }, [tiles, running, won, moves, time]);
 
@@ -72,6 +74,7 @@ export const PuzzleGame: React.FC = () => {
     setTime(0);
     setRunning(false);
     setWon(false);
+    setShowSubmit(false);
   };
 
   return (
@@ -124,9 +127,14 @@ export const PuzzleGame: React.FC = () => {
 
         <AdSlotComponent position="game" index={0} className="mb-4" />
         
-        <Leaderboard game="puzzle" unit=" moves" className="mt-4" />
+        {showSubmit && (
+          <SubmitScoreModal game="puzzle" score={Math.max(0, 5000 - moves * 10 - time * 5)} unit=" pts"
+            onDone={() => setShowSubmit(false)} />
+        )}
+        <Leaderboard game="puzzle" unit=" pts" className="mt-4" />
 <AdSlotComponent position="game" index={0} />
       </div>
     </div>
   );
 };
+
