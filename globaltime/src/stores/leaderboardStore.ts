@@ -29,7 +29,7 @@ export interface GameLeaderboard {
 
 const EMPTY_BOARD = (lowerIsBetter = false): GameLeaderboard => ({
   entries: [],
-  maxEntries: 20, // increased from 10 so more people can compete
+  maxEntries: 75,
   lowerIsBetter,
 });
 
@@ -80,11 +80,10 @@ export const useLeaderboardStore = create<LeaderboardStore>()(
         const cleanName = name.trim().slice(0, 20) || 'Anonymous';
         const pbKey = `${cleanName.toLowerCase()}-${game}`;
         const existingPB = get().personalBests[pbKey];
-        
-        // Check personal best
+
         let isPersonalBest = false;
         let prevBest: number | null = existingPB?.score ?? null;
-        
+
         if (!existingPB) {
           isPersonalBest = true;
         } else if (board.lowerIsBetter) {
@@ -103,7 +102,7 @@ export const useLeaderboardStore = create<LeaderboardStore>()(
 
         const combined = [...board.entries, newEntry];
         combined.sort((a, b) => board.lowerIsBetter ? a.score - b.score : b.score - a.score);
-        const trimmed = combined.slice(0, board.maxEntries);
+        const trimmed = combined.slice(0, 75);
         const madeBoard = trimmed.some(e => e.id === newEntry.id);
 
         const newPersonalBests = { ...get().personalBests };
@@ -120,7 +119,7 @@ export const useLeaderboardStore = create<LeaderboardStore>()(
         return { madeBoard, isPersonalBest, prevBest };
       },
 
-      getTopEntries: (game, n = 20) => {
+      getTopEntries: (game, n = 75) => {
         const board = get().boards[game];
         return board ? board.entries.slice(0, n) : [];
       },
@@ -136,6 +135,6 @@ export const useLeaderboardStore = create<LeaderboardStore>()(
         }));
       },
     }),
-    { name: 'worldclock-leaderboards-v4' }
+    { name: 'worldclock-leaderboards-v5' }
   )
 );
