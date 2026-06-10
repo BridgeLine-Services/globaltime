@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sun, Moon, Star, Telescope, Globe, ChevronDown, Search, Loader, Sparkles, Eye, Zap, MapPin } from 'lucide-react';
+import { Sun, Moon, Star, Telescope, ChevronDown, Search, Loader, Sparkles, Eye, Zap, MapPin } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
 import { AdSlotComponent } from '../components/AdSlot';
 import { COUNTRIES } from '../data/countries';
@@ -80,11 +80,6 @@ async function fetchSkyData(lat: number, lng: number): Promise<SkyData> {
   const d = await res.json();
   const r = d.results;
 
-  const toLocal = (iso: string, tz: string) => {
-    try {
-      return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: tz });
-    } catch { return new Date(iso).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true }); }
-  };
 
   const dayLengthSecs = r.day_length;
   const moon = getMoonPhase(new Date());
@@ -390,6 +385,17 @@ export const SkyPage: React.FC = () => {
         {/* ── SKY EVENTS TAB ─────────────────────────────────────────── */}
         {activeTab === 'events' && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+            {/* Next meteor shower teaser */}
+            {!activeMeteor && nextMeteor && (
+              <div className="p-4 rounded-2xl border border-indigo-400/20 bg-indigo-400/5 flex items-center gap-3 mb-4">
+                <span className="text-2xl">{nextMeteor.emoji}</span>
+                <div>
+                  <div className="text-indigo-300 font-bold text-sm">Next Meteor Shower: {nextMeteor.name}</div>
+                  <div className="text-white/50 text-xs">Peaks {nextMeteor.peak} · Up to {nextMeteor.zhr}/hr from {nextMeteor.origin}</div>
+                </div>
+                <div className="ml-auto text-indigo-300 font-bold text-sm">{daysUntil(nextMeteor.peak)}d away</div>
+              </div>
+            )}
             <div className="p-5 rounded-2xl border border-white/10 bg-white/5">
               <div className="text-white font-bold text-lg mb-4 flex items-center gap-2">
                 <Star size={16} className="text-yellow-400" /> Upcoming Sky Events
@@ -502,7 +508,7 @@ export const SkyPage: React.FC = () => {
                 <Zap size={16} className="text-purple-400" /> Best Planet Viewing — 2026
               </div>
               <div className="space-y-3">
-                {SOLAR_EVENTS.filter(e => e.type === 'planet').map((event, i) => (
+                {SOLAR_EVENTS.filter(e => e.type === 'planet').map((event) => (
                   <div key={event.date} className="flex items-center gap-3 p-3 rounded-xl border border-cyan-400/20 bg-cyan-400/5">
                     <span className="text-2xl">{event.emoji}</span>
                     <div className="flex-1">
@@ -560,7 +566,6 @@ export const SkyPage: React.FC = () => {
               </div>
               {(() => {
                 const synodicMonth = 29.53058770576;
-                const phases: { name: string; emoji: string; date: Date }[] = [];
                 const now = new Date();
                 const knownNewMoon = new Date('2000-01-06T18:14:00Z');
                 const elapsed = (now.getTime() - knownNewMoon.getTime()) / (1000*60*60*24);
