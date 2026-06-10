@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Globe, Gamepad2, Clock, Menu, X, BookOpen, Cloud, Calendar, HelpCircle, ChevronDown, Telescope, CloudLightning } from 'lucide-react';
+import { Globe, Gamepad2, Clock, Menu, X, BookOpen, Cloud, Calendar, HelpCircle, ChevronDown, Telescope, CloudLightning, Map } from 'lucide-react';
 
 const SECRET_TAPS   = 5;
 const SECRET_WINDOW = 3000;
@@ -30,6 +30,7 @@ export const Navbar: React.FC = () => {
     { to: '/world', label: 'World Clock', icon: <Clock    size={16} /> },
     { to: '/games', label: 'Mini Games',  icon: <Gamepad2 size={16} /> },
     { to: '/blog',  label: 'Blog',        icon: <BookOpen size={16} /> },
+    { to: '/collections', label: 'Collections', icon: <Map size={16} /> },
   ];
 
   const moreLinks = [
@@ -134,3 +135,4 @@ export const Navbar: React.FC = () => {
     </nav>
   );
 };
+
