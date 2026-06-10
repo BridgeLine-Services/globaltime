@@ -11,12 +11,9 @@ export default defineConfig({
     },
   },
   build: {
-    // Aggressive minification
-    minify: 'esbuild',
-    // Tree-shake everything
+    // vite8 uses oxc minifier by default (esbuild is no longer bundled in vite8)
+    // target defaults to 'esnext' — no transpilation overhead, modern browsers only
     reportCompressedSize: false,
-    // Target modern browsers — smaller, faster bundles
-    target: 'es2020',
     // Inline small assets (<4kb) as base64 to reduce HTTP requests
     assetsInlineLimit: 4096,
     // Enable CSS code splitting for faster initial load
