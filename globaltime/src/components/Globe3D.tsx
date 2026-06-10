@@ -36,6 +36,46 @@ function latLngToVec3(lat: number, lng: number, r: number): THREE.Vector3 {
   );
 }
 
+// ── Subsolar point calculation ─────────────────────────────────────────────
+// Returns unit vector pointing from Earth center toward the Sun (in globe-fixed coords)
+// Based on simplified solar position algorithm (accurate to ~1°)
+function getSunDirection(): THREE.Vector3 {
+  const now = new Date();
+  const Y = now.getUTCFullYear(), M = now.getUTCMonth() + 1, D = now.getUTCDate();
+  const H = now.getUTCHours() + now.getUTCMinutes() / 60 + now.getUTCSeconds() / 3600;
+  // Julian Date
+  const JD = 367*Y - Math.trunc(7*(Y+Math.trunc((M+9)/12))/4)
+           + Math.trunc(275*M/9) + D + 1721013.5 + H/24;
+  const n = JD - 2451545.0;
+  const L = (280.460 + 0.9856474 * n) % 360;       // mean longitude
+  const g = ((357.528 + 0.9856003 * n) % 360) * Math.PI / 180; // mean anomaly
+  const λ = (L + 1.915 * Math.sin(g) + 0.020 * Math.sin(2*g)) * Math.PI / 180;
+  const ε = 23.439 * Math.PI / 180;                 // obliquity of ecliptic
+
+  // Declination & right ascension
+  const sinDec  = Math.sin(ε) * Math.sin(λ);
+  const cosDec  = Math.cos(Math.asin(sinDec));
+  const RA      = Math.atan2(Math.cos(ε) * Math.sin(λ), Math.cos(λ));
+
+  // Local Hour Angle for prime meridian (Greenwich)
+  const GMST    = (280.46061837 + 360.98564736629 * n) * Math.PI / 180;
+  const H_rad   = GMST - RA;
+
+  // Subsolar point (lat/lng in radians)
+  const subLat  = Math.asin(sinDec);
+  const subLng  = -H_rad;  // negate: THREE's X axis points toward lng=0 at H=0
+
+  // Convert to THREE.js coordinate system (Y=up, X=+lng=0, Z=+lat=0 cross)
+  // Standard: x = cos(lat)*cos(lng), y = sin(lat), z = cos(lat)*sin(lng)
+  // In THREE globe: x = -cos(lat)*cos(lng), y = cos(lat)*sin(lng), z = sin(lat) ... 
+  // but since globe texture aligns +X toward lng=180, we use:
+  const cosLat = Math.cos(subLat);
+  const x = -cosLat * Math.cos(subLng);
+  const y =  Math.sin(subLat);
+  const z =  cosLat * Math.sin(subLng);
+  return new THREE.Vector3(x, y, z).normalize();
+}
+
 export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, onCountrySelect }) => {
   const mountRef    = useRef<HTMLDivElement>(null);
   const rendRef     = useRef<THREE.WebGLRenderer | null>(null);
@@ -96,8 +136,11 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     // Lights
     scene.add(new THREE.AmbientLight(0x334466, 1.4));
     const sun = new THREE.DirectionalLight(0xffffff, 2.0);
+    // Initial position — updated every frame in animate()
     sun.position.set(5, 3, 5);
     scene.add(sun);
+    // Ref to sun light so animation can update it
+    const sunRef = { current: sun };
     const fill = new THREE.DirectionalLight(0x2244aa, 0.6);
     fill.position.set(-5, -3, -5);
     scene.add(fill);
@@ -127,6 +170,19 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       new THREE.SphereGeometry(1.015, 32, 32),
       new THREE.MeshPhongMaterial({ color: 0x4488ff, transparent: true, opacity: 0.08, side: THREE.FrontSide }),
     ));
+
+    // ── Day/Night terminator overlay ─────────────────────────────────────
+    // A slightly larger sphere on the dark side, semi-transparent blue-black
+    const nightMat = new THREE.MeshPhongMaterial({
+      color: 0x000520,
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.BackSide,   // render inside-out so it only shows the night hemisphere
+      depthWrite: false,
+    });
+    const nightMesh = new THREE.Mesh(new THREE.SphereGeometry(1.005, 32, 32), nightMat);
+    group.add(nightMesh);
+    // We'll update this mesh's quaternion each frame to track the real sun position
 
     // Outer halo (stays in scene — doesn't rotate)
     scene.add(new THREE.Mesh(
@@ -225,6 +281,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     const AUTO_SPEED = 0.0014;
     const X_LIMIT    = Math.PI / 2.2;
 
+    let lastSunUpdate = 0;
     const animate = () => {
       frame++;
       rafRef.current = requestAnimationFrame(animate);
@@ -255,6 +312,13 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
         }
       }
 
+      // Update sun direction every 30s to sync with real solar position
+      const nowMs = Date.now();
+      if (nowMs - lastSunUpdate > 30000) {
+        lastSunUpdate = nowMs;
+        const sunDir = getSunDirection();
+        sunRef.current.position.copy(sunDir.clone().multiplyScalar(10));
+      }
       renderer.render(scene, camera);
     };
     animate();
