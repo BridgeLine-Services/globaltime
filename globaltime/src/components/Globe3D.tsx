@@ -54,7 +54,6 @@ function getSunDirection(): THREE.Vector3 {
 
   // Declination & right ascension
   const sinDec  = Math.sin(ε) * Math.sin(λ);
-  const cosDec  = Math.cos(Math.asin(sinDec));
   const RA      = Math.atan2(Math.cos(ε) * Math.sin(λ), Math.cos(λ));
 
   // Local Hour Angle for prime meridian (Greenwich)
