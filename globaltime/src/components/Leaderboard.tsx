@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Medal, Crown, Star, RotateCcw, Sparkles, User } from 'lucide-react';
 import { useLeaderboardStore, type GameId } from '../stores/leaderboardStore';
+import { useAdStore } from '../stores/adStore';
 
 interface LeaderboardProps {
   game: GameId;
@@ -26,6 +27,7 @@ const RANK_STYLES = [
 
 export const Leaderboard: React.FC<LeaderboardProps> = ({ game, unit, formatScore, className = '' }) => {
   const { getTopEntries, clearBoard, boards, playerName, getPersonalBest } = useLeaderboardStore();
+  const isAdmin = useAdStore(s => s.isAdmin);
   const entries = getTopEntries(game, 75);
   const lowerIsBetter = boards[game]?.lowerIsBetter ?? false;
   const fmt = formatScore ?? ((s: number) => `${s}${unit}`);
@@ -41,7 +43,7 @@ export const Leaderboard: React.FC<LeaderboardProps> = ({ game, unit, formatScor
         </div>
         <div className="flex items-center gap-2">
           <span className="text-white/25 text-xs">{entries.length}/75</span>
-          {entries.length > 0 && (
+          {entries.length > 0 && isAdmin && (
             <button onClick={() => { if (window.confirm('Clear global leaderboard?')) clearBoard(game); }}
               className="text-white/20 hover:text-white/50 transition-colors" title="Clear">
               <RotateCcw size={12} />
@@ -174,4 +176,5 @@ export const SubmitScoreModal: React.FC<SubmitScoreProps> = ({ game, score, unit
     </motion.div>
   );
 };
+
 
