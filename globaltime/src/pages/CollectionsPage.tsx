@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, Star, Map, Search, ChevronDown, Lock, CheckCircle2, Gem } from 'lucide-react';
 import { useTreasureStore, getTrinketsForCountry, COUNTRY_TRINKETS } from '../stores/treasureStore';
@@ -39,7 +39,10 @@ export const CollectionsPage: React.FC = () => {
   const [nameInput, setNameInput] = useState('');
   const [showNamePrompt, setShowNamePrompt] = useState(false);
 
-  const { isFound, playerName, setPlayerName, leaderboard, submitToLeaderboard, getTotalFound } = useTreasureStore();
+  const { isFound, playerName, setPlayerName, leaderboard, submitToLeaderboard, getTotalFound, checkExpiry } = useTreasureStore();
+
+  // Check if progress has expired (2 weeks of inactivity)
+  useEffect(() => { checkExpiry(); }, [checkExpiry]);
 
   useSEO({
     title: 'Trinket Collections — Global Treasure Hunt | World Clock',
