@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { AdSlotComponent } from '../components/AdSlot';
-import { Leaderboard } from '../components/Leaderboard';
+import { Leaderboard, SubmitScoreModal } from '../components/Leaderboard';
 
 const W = 600, H = 200, GROUND = 160, GRAVITY = 0.6, JUMP = -12;
 
@@ -17,6 +17,7 @@ export const RunnerGame: React.FC = () => {
   const rafRef = useRef(0);
   const [_phase, setPhase] = useState<'idle' | 'playing' | 'dead'>('idle');
   const [score, setScore] = useState(0);
+  const [showSubmit, setShowSubmit] = useState(false);
   
 
   const draw = useCallback(() => {
@@ -138,6 +139,7 @@ export const RunnerGame: React.FC = () => {
         if (score > getBest()) localStorage.setItem('runner_best', String(score));
         setScore(score);
         setPhase('dead');
+        setShowSubmit(true);
       }
     }
 
@@ -158,6 +160,7 @@ export const RunnerGame: React.FC = () => {
       stateRef.current = { player: { y: GROUND, vy: 0, onGround: true }, obstacles: [], score: 0, speed: 4, frame: 0, running: true, dead: false };
       setPhase('playing');
       setScore(0);
+      setShowSubmit(false);
       cancelAnimationFrame(rafRef.current);
       rafRef.current = requestAnimationFrame(gameLoop);
       return;
@@ -216,9 +219,14 @@ export const RunnerGame: React.FC = () => {
 
         <AdSlotComponent position="game" index={0} className="mt-4" />
         
+        {showSubmit && (
+          <SubmitScoreModal game="runner" score={score} unit=" pts"
+            onDone={() => setShowSubmit(false)} />
+        )}
         <Leaderboard game="runner" unit=" pts" className="mt-4" />
 <AdSlotComponent position="game" index={0} className="mt-4" />
       </div>
     </div>
   );
 };
+
