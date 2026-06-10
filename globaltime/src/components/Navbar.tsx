@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Globe, Gamepad2, Clock, Menu, X, BookOpen, Cloud, Calendar, HelpCircle, ChevronDown } from 'lucide-react';
+import { Globe, Gamepad2, Clock, Menu, X, BookOpen, Cloud, Calendar, HelpCircle, ChevronDown, Telescope, CloudLightning } from 'lucide-react';
 
 const SECRET_TAPS   = 5;
 const SECRET_WINDOW = 3000;
@@ -33,10 +33,12 @@ export const Navbar: React.FC = () => {
   ];
 
   const moreLinks = [
-    { to: '/weather',     label: 'World Weather',   icon: <Cloud      size={15} /> },
-    { to: '/on-this-day', label: 'On This Day',     icon: <Calendar   size={15} /> },
-    { to: '/faq',         label: 'FAQ',             icon: <HelpCircle size={15} /> },
-    { to: '/legal',       label: 'Legal & Privacy', icon: <Globe      size={15} /> },
+    { to: '/weather',     label: 'World Weather',   icon: <Cloud           size={15} /> },
+    { to: '/sky',         label: 'Sky & Space',     icon: <Telescope       size={15} /> },
+    { to: '/storms',      label: 'Storm Tracker',   icon: <CloudLightning  size={15} /> },
+    { to: '/on-this-day', label: 'On This Day',     icon: <Calendar        size={15} /> },
+    { to: '/faq',         label: 'FAQ',             icon: <HelpCircle      size={15} /> },
+    { to: '/legal',       label: 'Legal & Privacy', icon: <Globe           size={15} /> },
   ];
 
   const allMobileLinks = [...mainLinks, ...moreLinks];
