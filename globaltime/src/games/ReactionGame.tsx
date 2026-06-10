@@ -43,6 +43,7 @@ export const ReactionGame: React.FC = () => {
       setPhase('result');
       setBestScore(t);
       setScores(prev => [...prev.slice(-4), t]);
+      setShowSubmit(true);
     }
     if (phase === 'idle' || phase === 'result' || phase === 'toosoon') {
       start();
@@ -143,3 +144,4 @@ export const ReactionGame: React.FC = () => {
     </div>
   );
 };
+
