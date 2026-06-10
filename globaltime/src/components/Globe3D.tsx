@@ -68,7 +68,8 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const sceneRef       = useRef<THREE.Scene | null>(null);
   const cameraRef      = useRef<THREE.PerspectiveCamera | null>(null);
   const groupRef       = useRef<THREE.Group | null>(null);
-  const lMarkersRef    = useRef<THREE.Mesh[]>([]);
+  const lMarkersRef      = useRef<THREE.Mesh[]>([]);
+  const clickSphereRef   = useRef<THREE.Mesh | null>(null);
   const trinketMeshRef = useRef<THREE.Mesh[]>([]);
   const rafRef         = useRef<number>(0);
 
@@ -168,6 +169,15 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     });
     const nightMesh = new THREE.Mesh(new THREE.SphereGeometry(1.005, 32, 32), nightMat);
     group.add(nightMesh);
+
+    // ── Dedicated click-detection sphere (transparent, exact globe size) ────
+    const clickSphere = new THREE.Mesh(
+      new THREE.SphereGeometry(1.001, 64, 64),
+      new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.0, depthWrite: false }),
+    );
+    clickSphere.userData = { type: 'globe_surface' };
+    group.add(clickSphere);
+    clickSphereRef.current = clickSphere;
 
     scene.add(new THREE.Mesh(
       new THREE.SphereGeometry(1.12, 32, 32),
@@ -453,39 +463,35 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       return;
     }
 
-    // Globe surface click → find nearest country by lat/lng projection
-    const sphereHits = ray.intersectObject(
-      sceneRef.current!.children.find(c => c instanceof THREE.Group) as THREE.Group,
-      true
-    ).filter(h => (h.object as THREE.Mesh).geometry instanceof THREE.SphereGeometry
-      && !(h.object.userData.type));
+    // Globe surface click — use the dedicated transparent click sphere
+    if (clickSphereRef.current) {
+      const globeHits = ray.intersectObject(clickSphereRef.current, false);
+      if (globeHits.length > 0) {
+        const point = globeHits[0].point;
+        const g = groupRef.current;
+        if (!g) return;
+        // Un-rotate the hit point from globe group rotation back to lat/lng space
+        const invQuat = g.quaternion.clone().invert();
+        const local = point.clone().applyQuaternion(invQuat).normalize();
 
-    if (sphereHits.length > 0) {
-      // Get the click point on the globe surface and convert back to lat/lng
-      const point = sphereHits[0].point;
-      // The group is rotated, so un-rotate the point
-      const g = groupRef.current;
-      if (!g) return;
-      const invQuat = g.quaternion.clone().invert();
-      const localPoint = point.clone().applyQuaternion(invQuat);
+        // Convert unit vector to lat/lng
+        const lat = Math.asin(Math.max(-1, Math.min(1, local.y))) * (180 / Math.PI);
+        const lng = Math.atan2(local.z, -local.x) * (180 / Math.PI) - 180;
+        const normLng = ((lng % 360) + 360) % 360 - 180;
 
-      // Convert 3D point to lat/lng
-      const lat = Math.asin(localPoint.y / localPoint.length()) * (180 / Math.PI);
-      const lng = Math.atan2(localPoint.z, -localPoint.x) * (180 / Math.PI) - 180;
-      const normLng = ((lng % 360) + 360) % 360 - 180;
-
-      // Find closest country
-      let closest: Country | null = null;
-      let minDist = Infinity;
-      for (const c of countries) {
-        const dLat = c.lat - lat;
-        const dLng = c.lng - normLng;
-        const dist = dLat * dLat + dLng * dLng;
-        if (dist < minDist) { minDist = dist; closest = c; }
-      }
-      if (closest && minDist < 400) {
-        onCountrySelect?.(closest);
-        setTooltip(null); setTrinketPopup(null);
+        // Find closest country by angular distance
+        let closest: Country | null = null;
+        let minDist = Infinity;
+        for (const c of countries) {
+          const dLat = c.lat - lat;
+          const dLng = c.lng - normLng;
+          const dist = dLat * dLat + dLng * dLng;
+          if (dist < minDist) { minDist = dist; closest = c; }
+        }
+        if (closest) {
+          onCountrySelect?.(closest);
+          setTooltip(null); setTrinketPopup(null);
+        }
       }
     }
   }, [onCountrySelect, countries]);
