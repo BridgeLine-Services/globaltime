@@ -15,6 +15,7 @@ import { FAQPage } from './pages/FAQPage';
 import { AIChatbot } from './components/AIChatbot';
 import { SkyPage } from './pages/SkyPage';
 import { StormsPage } from './pages/StormsPage';
+import { CollectionsPage } from './pages/CollectionsPage';
 
 // Original games
 const ReactionGame  = lazy(() => import('./games/ReactionGame').then(m => ({ default: m.ReactionGame })));
@@ -88,6 +89,7 @@ export default function App() {
           <Route path="/faq"          element={<FAQPage />} />
           <Route path="/sky"          element={<SkyPage />} />
           <Route path="/storms"       element={<StormsPage />} />
+          <Route path="/collections"   element={<CollectionsPage />} />
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
         </Routes>
