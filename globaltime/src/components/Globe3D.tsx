@@ -412,26 +412,34 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       const pos   = latLngToVec3(lm.lat, lm.lng, 1.025);
       const color = MARKER_COLORS[lm.type];
 
-      // Outer glow ring
+      // Outer glow halo
       const glowRing = new THREE.Mesh(
-        new THREE.SphereGeometry(0.040, 14, 14),
-        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.18, depthWrite: false }),
+        new THREE.SphereGeometry(0.052, 16, 16),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.22, depthWrite: false }),
       );
       glowRing.position.copy(pos);
       group.add(glowRing);
 
-      // Core dot — visible marker
+      // Mid glow ring (makes marker look brighter / more prominent)
+      const midGlow = new THREE.Mesh(
+        new THREE.SphereGeometry(0.036, 12, 12),
+        new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0.45, depthWrite: false }),
+      );
+      midGlow.position.copy(pos);
+      group.add(midGlow);
+
+      // Core dot — bright solid center
       const dot = new THREE.Mesh(
-        new THREE.SphereGeometry(0.026, 10, 10),
+        new THREE.SphereGeometry(0.020, 10, 10),
         new THREE.MeshBasicMaterial({ color }),
       );
       dot.position.copy(pos);
       dot.userData = { type: 'landmark', landmark: lm };
       group.add(dot);
 
-      // Invisible hit sphere — generous click area
+      // Invisible hit sphere — generous click / tap area
       const hit = new THREE.Mesh(
-        new THREE.SphereGeometry(0.062, 8, 8),
+        new THREE.SphereGeometry(0.075, 8, 8),
         new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001, depthWrite: false }),
       );
       hit.position.copy(pos);
@@ -746,29 +754,50 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const onML = useCallback(() => { if (isDragging.current) endDrag(); }, [endDrag]);
 
   // ── Zoom to selected country ────────────────────────────────────────────────
+  const zoomRafRef = useRef<number>(0);
+
   useEffect(() => {
     if (!selectedCountry || !groupRef.current || !cameraRef.current) return;
     const g   = groupRef.current;
     const cam = cameraRef.current;
-    const targetRotY =  -(selectedCountry.lng) * (Math.PI / 180);
-    const targetRotX =   (selectedCountry.lat)  * (Math.PI / 180) * 0.5;
-    const startRotY  = g.rotation.y, startRotX = g.rotation.x;
+
+    // Raw target angles (absolute, in radians)
+    const rawTargetY = -(selectedCountry.lng) * (Math.PI / 180);
+    const rawTargetX =  (selectedCountry.lat)  * (Math.PI / 180) * 0.45;
+
+    // Normalize rotations to find shortest arc from current position
+    // (avoids multi-rotation spin when auto-rotate has accumulated many full turns)
+    const normalizeAngle = (start: number, target: number): number => {
+      const TWO_PI = 2 * Math.PI;
+      let diff = ((target - start) % TWO_PI + TWO_PI) % TWO_PI;
+      if (diff > Math.PI) diff -= TWO_PI;
+      return start + diff;
+    };
+
+    const startRotY  = g.rotation.y;
+    const startRotX  = g.rotation.x;
+    const targetRotY = normalizeAngle(startRotY, rawTargetY);
+    const targetRotX = normalizeAngle(startRotX, rawTargetX);
     const startZ     = cam.position.z;
     const targetZ    = 1.65;
+
     let t = 0;
     autoRotate.current = false;
     velY.current = 0; velX.current = 0;
     if (resumeTimer.current) clearTimeout(resumeTimer.current);
 
+    // Cancel any previous zoom animation
+    cancelAnimationFrame(zoomRafRef.current);
+
     const anim = () => {
       t = Math.min(1, t + 0.025);
       const ease = 1 - Math.pow(1 - t, 3);
-      g.rotation.y  = startRotY  + (targetRotY - startRotY)  * ease;
-      g.rotation.x  = startRotX  + (targetRotX - startRotX)  * ease;
-      cam.position.z = startZ    + (targetZ     - startZ)     * ease;
-      if (t < 1) requestAnimationFrame(anim);
+      g.rotation.y   = startRotY  + (targetRotY - startRotY)  * ease;
+      g.rotation.x   = startRotX  + (targetRotX - startRotX)  * ease;
+      cam.position.z = startZ     + (targetZ    - startZ)      * ease;
+      if (t < 1) zoomRafRef.current = requestAnimationFrame(anim);
     };
-    anim();
+    zoomRafRef.current = requestAnimationFrame(anim);
     resumeTimer.current = setTimeout(() => { autoRotate.current = true; }, 9000);
   }, [selectedCountry]);
 
