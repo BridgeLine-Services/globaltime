@@ -13,7 +13,7 @@
     <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
     <link rel="canonical" href="https://globaltime-pi.vercel.app/" />
 
-    <!-- Google AdSense -->
+    <!-- Google AdSense verification -->
     <meta name="google-adsense-account" content="ca-pub-1924565904520635" />
 
     <!-- Open Graph -->
@@ -137,22 +137,15 @@
       }
       .skip-link:focus { top: 0; }
     </style>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1924565904520635"
+         crossorigin="anonymous"></script>
   </head>
   <body>
     <!-- Skip to main content (accessibility) -->
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <!-- Google AdSense: loaded after page content to avoid render-blocking -->
-    <script>
-      window.addEventListener('load', function() {
-        var s = document.createElement('script');
-        s.async = true;
-        s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1924565904520635';
-        s.crossOrigin = 'anonymous';
-        s.setAttribute('fetchpriority', 'low');
-        document.body.appendChild(s);
-      });
-    </script>
   </body>
 </html>
