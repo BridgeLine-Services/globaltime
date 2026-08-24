@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, ChevronDown, Search, Clock, Globe, Gamepad2, Cloud, Shield, Zap } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
@@ -234,8 +234,9 @@ function extractText(node: React.ReactNode): string {
   if (typeof node === 'number') return String(node);
   if (node == null || node === false) return '';
   if (Array.isArray(node)) return node.map(extractText).join(' ');
-  if (typeof node === 'object' && 'props' in node) {
-    return extractText(node.props?.children);
+  if (React.isValidElement(node)) {
+    const props = node.props as { children?: React.ReactNode };
+    return extractText(props?.children);
   }
   return '';
 }
