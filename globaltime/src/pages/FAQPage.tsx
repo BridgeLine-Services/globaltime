@@ -27,7 +27,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     items: [
       {
         q: 'What is GlobalTime?',
-        a: 'GlobalTime is a free, real-time time zone website showing the exact current time in 140+ countries and territories. We also offer an interactive 3D globe, country information, world weather forecasts, mini-games, a world blog, historical facts, and much more — all at no cost.',
+        a: 'GlobalTime is a free, real-time time zone website showing the current time in 140+ countries and territories. We also offer an interactive 3D globe, country information, world weather forecasts, mini-games, a world blog, historical facts, and much more — all at no cost.',
       },
       {
         q: 'Is GlobalTime free to use?',
@@ -43,7 +43,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: 'What languages is the site available in?',
-        a: 'The site is in English by default but can be translated into 100+ languages using the built-in language switcher powered by Google Translate.',
+        a: 'The site is currently in English. We are working on adding more languages in the future.',
       },
     ],
   },
@@ -228,6 +228,18 @@ const FAQ_CATEGORIES: FAQCategory[] = [
   },
 ];
 
+// Extract plain text from React node for structured data
+function extractText(node: React.ReactNode): string {
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (node == null || node === false) return '';
+  if (Array.isArray(node)) return node.map(extractText).join(' ');
+  if (typeof node === 'object' && 'props' in node) {
+    return extractText(node.props?.children);
+  }
+  return '';
+}
+
 export function FAQPage() {
   useSEO({
     title: 'FAQ — Frequently Asked Questions | GlobalTime',
@@ -240,7 +252,7 @@ export function FAQPage() {
         cat.items.map(item => ({
           '@type': 'Question',
           name: item.q,
-          acceptedAnswer: { '@type': 'Answer', text: typeof item.a === 'string' ? item.a : item.q },
+          acceptedAnswer: { '@type': 'Answer', text: typeof item.a === 'string' ? item.a : extractText(item.a) },
         }))
       ),
     },

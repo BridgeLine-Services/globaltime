@@ -117,7 +117,7 @@ export const HomePage: React.FC = () => {
         >
           {[
             { icon: <Globe size={20} />, value: '140+', label: 'Countries' },
-            { icon: <Zap size={20} />, value: '<16ms', label: 'Update Rate' },
+            { icon: <Zap size={20} />, value: 'Live', label: 'Updates' },
             { icon: <TrendingUp size={20} />, value: '24/7', label: 'Live Data' },
             { icon: <BookOpen size={20} />, value: '12+', label: 'Guides' },
           ].map((stat, i) => (
