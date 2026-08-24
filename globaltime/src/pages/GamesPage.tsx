@@ -126,8 +126,6 @@ export const GamesPage: React.FC = () => {
           </div>
         </motion.div>
 
-        <AdSlotComponent position="mid-page" index={0} className="mb-8" />
-
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
           {GAMES.map((game, i) => (
             <motion.div key={game.slug}
@@ -151,8 +149,6 @@ export const GamesPage: React.FC = () => {
           ))}
         </div>
 
-        <AdSlotComponent position="mid-page" index={1} className="mb-4" />
-        <AdSlotComponent position="game" index={0} />
       </div>
     </div>
   );

@@ -342,8 +342,6 @@ export function FAQPage() {
           })}
         </div>
 
-        <AdSlotComponent position="faq" index={1} className="mt-8" />
-
         {/* CTA */}
         <div className="text-center mt-10 p-6 rounded-2xl bg-white/[0.03] border border-white/10">
           <div className="text-2xl mb-2">🤔</div>

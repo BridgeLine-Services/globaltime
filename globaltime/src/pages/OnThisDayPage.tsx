@@ -307,7 +307,6 @@ export function OnThisDayPage() {
           </div>
         </div>
 
-        <AdSlotComponent position="on-this-day" index={1} className="mt-8" />
       </div>
     </div>
   );

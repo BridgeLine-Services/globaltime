@@ -387,8 +387,6 @@ export function WeatherPage() {
           })}
         </div>
 
-        <AdSlotComponent position="weather" index={1} className="mt-8" />
-
         {/* Data attribution */}
         <div className="text-center mt-8 text-white/20 text-xs">
           Weather data provided by <a href="https://open-meteo.com" target="_blank" rel="noopener noreferrer" className="text-cyan-400/60 hover:text-cyan-400">Open-Meteo</a> (open-source weather API). Forecasts up to 16 days. Data refreshes on page load.

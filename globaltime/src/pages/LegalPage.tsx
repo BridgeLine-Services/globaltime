@@ -338,8 +338,6 @@ export function LegalPage() {
           ))}
         </div>
 
-        <AdSlotComponent position="legal" index={1} className="mt-8" />
-
         <div className="text-center mt-10 text-white/30 text-sm">
           Questions about any of these policies? Contact us at{' '}
           <a href={`mailto:${EMAIL}`} className="text-cyan-400 hover:underline">{EMAIL}</a>

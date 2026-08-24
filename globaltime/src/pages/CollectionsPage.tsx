@@ -355,7 +355,6 @@ export const CollectionsPage: React.FC = () => {
           </motion.div>
         )}
 
-        <AdSlotComponent position="mid-page" index={0} className="mt-8" />
       </div>
     </div>
   );
