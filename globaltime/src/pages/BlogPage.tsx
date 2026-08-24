@@ -5,7 +5,7 @@ import { useBlogStore, type BlogPost } from '../stores/blogStore';
 import { AdSlotComponent } from '../components/AdSlot';
 import { useSEO } from '../hooks/useSEO';
 
-const CATEGORY_COLORS: Record<BlogPost['category'], string> = {
+export const CATEGORY_COLORS: Record<BlogPost['category'], string> = {
   culture: '#f59e0b',
   science: '#8b5cf6',
   travel:  '#10b981',
@@ -14,7 +14,7 @@ const CATEGORY_COLORS: Record<BlogPost['category'], string> = {
   tech:    '#06b6d4',
 };
 
-const CATEGORY_LABELS: Record<BlogPost['category'], string> = {
+export const CATEGORY_LABELS: Record<BlogPost['category'], string> = {
   culture: '🌏 Culture',
   science: '🔬 Science',
   travel:  '✈️ Travel',

@@ -57,6 +57,14 @@ const BLOG_POOL: Array<Omit<BlogPost, 'id' | 'publishedAt'>> = [
     { title: "The Amazon River Has No Bridges Across It — For Its Entire 6,400km Length", excerpt: "The world's largest river by volume flows through one of the most biodiverse ecosystems on Earth, and not a single bridge spans it.", body: "The Amazon River stretches 6,400 kilometers across South America and carries 20% of all the freshwater that flows into the world's oceans. Despite this immense scale — and Brazil's status as a major economy — not one bridge crosses the main Amazon River. The reasons are multiple: the river floods dramatically each year (water levels vary by up to 10 meters seasonally), creating constantly shifting floodplains that make foundations unstable. The jungle on either side has almost no roads, so a bridge would connect nothing to nothing. The Amazon is the highway — a network of riverboats serves as the primary transportation infrastructure for millions of people in riverside communities. Ferries and small aircraft handle cross-river travel. Some Amazon tributaries have bridges — Manaus has a bridge over the Rio Negro — but the main river itself remains unbridged, one of the most remarkable infrastructure facts about any major world river.", category: 'travel', emoji: '🌊', country: 'Brazil', readTime: 5, imageGradient: 'from-emerald-500/20 to-green-600/20' },
 ];
 
+export function slugifyPostTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/&/g, 'and')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 // Deterministic shuffle based on a seed (hour-based)
 function seededShuffle<T>(arr: T[], seed: number): T[] {
   const a = [...arr];
