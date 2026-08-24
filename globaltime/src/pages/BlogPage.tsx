@@ -106,7 +106,7 @@ function PostModal({ post, onClose }: { post: BlogPost; onClose: () => void }) {
 export const BlogPage: React.FC = () => {
   useSEO({
     title: 'World Stories & Facts — Culture, Science, Travel & History | World Clock',
-    description: 'Stranger than fiction, true everywhere. Dive into fascinating world stories — bizarre history, hidden science, wild travel facts, and cultural mysteries. Refreshed every 2 hours.',
+    description: 'WorldClock.live publishes and curates fascinating stories about world culture, history, science, travel, technology, and unusual time-related facts.',
     canonical: 'https://globaltime-pi.vercel.app/blog',
     structuredData: [
       {
@@ -129,29 +129,11 @@ export const BlogPage: React.FC = () => {
     ],
   });
 
-  const { posts, lastRefreshed, initPosts, refreshPosts } = useBlogStore();
+  const { posts, initPosts } = useBlogStore();
   const [selected, setSelected] = useState<BlogPost | null>(null);
   const [filter, setFilter] = useState<BlogPost['category'] | 'all'>('all');
-  const [countdown, setCountdown] = useState('');
 
   useEffect(() => { initPosts(); }, [initPosts]);
-
-  // Countdown to next refresh
-  useEffect(() => {
-    const update = () => {
-      const TWO_HOURS = 2 * 60 * 60 * 1000;
-      const next = lastRefreshed + TWO_HOURS;
-      const diff = Math.max(0, next - Date.now());
-      const h = Math.floor(diff / 3600000);
-      const m = Math.floor((diff % 3600000) / 60000);
-      const s = Math.floor((diff % 60000) / 1000);
-      setCountdown(`${h}h ${String(m).padStart(2,'0')}m ${String(s).padStart(2,'0')}s`);
-      if (diff <= 0) initPosts();
-    };
-    update();
-    const t = setInterval(update, 1000);
-    return () => clearInterval(t);
-  }, [lastRefreshed, initPosts]);
 
   const categories: (BlogPost['category'] | 'all')[] = ['all', 'culture', 'science', 'travel', 'history', 'weird', 'tech'];
   const filtered = filter === 'all' ? posts : posts.filter(p => p.category === filter);
@@ -169,17 +151,9 @@ export const BlogPage: React.FC = () => {
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white mb-2">
             World <span className="text-cyan-400">Stories</span>
           </h1>
-          <p className="text-white/50 text-sm max-w-md mx-auto">
-            Fascinating facts from every corner of the Earth. Fresh stories every 2 hours.
+          <p className="text-white/50 text-sm max-w-lg mx-auto leading-relaxed">
+            WorldClock.live publishes and curates stories about world culture, history, science, travel, technology, and unusual time-related facts.
           </p>
-          <div className="flex items-center justify-center gap-2 mt-3 text-xs text-white/30">
-            <RefreshCw size={11} className="animate-spin" style={{ animationDuration: '8s' }} />
-            <span>Next refresh in <span className="text-cyan-400 font-mono">{countdown}</span></span>
-            <button onClick={() => refreshPosts(true)}
-              className="ml-2 px-2 py-0.5 rounded-full border border-white/10 hover:border-cyan-400/30 hover:text-white/60 transition-all">
-              Refresh now
-            </button>
-          </div>
         </motion.div>
 
         {/* Category filter */}
