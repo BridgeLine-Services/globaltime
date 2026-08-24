@@ -9,9 +9,58 @@ import { CountryCard } from '../components/CountryCard';
 import { AdSlotComponent } from '../components/AdSlot';
 import { useAnalyticsStore } from '../stores/analyticsStore';
 import { useSEO } from '../hooks/useSEO';
-import { getUTCOffset } from '../utils/time';
+import { getUTCOffset, getNumericOffsetMinutes, getTimeInTimezone } from '../utils/time';
 
 const Globe3D = lazy(() => import('../components/Globe3D').then(m => ({ default: m.Globe3D })));
+
+const CITY_MAP: Record<string, string[]> = {
+  'United States': ['New York', 'Los Angeles', 'Chicago', 'Houston'],
+  'Canada': ['Toronto', 'Vancouver', 'Montreal', 'Calgary'],
+  'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth'],
+  'Brazil': ['São Paulo', 'Rio de Janeiro', 'Brasília', 'Salvador'],
+  'China': ['Beijing', 'Shanghai', 'Guangzhou', 'Shenzhen'],
+  'India': ['New Delhi', 'Mumbai', 'Bengaluru', 'Kolkata'],
+  'Japan': ['Tokyo', 'Osaka', 'Kyoto', 'Yokohama'],
+  'United Kingdom': ['London', 'Manchester', 'Edinburgh', 'Birmingham'],
+  'Germany': ['Berlin', 'Hamburg', 'Munich', 'Frankfurt'],
+  'France': ['Paris', 'Lyon', 'Marseille', 'Toulouse'],
+  'South Africa': ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria'],
+  'Mexico': ['Mexico City', 'Guadalajara', 'Monterrey', 'Cancún'],
+  'Russia': ['Moscow', 'Saint Petersburg', 'Novosibirsk', 'Yekaterinburg'],
+  'Italy': ['Rome', 'Milan', 'Naples', 'Turin'],
+  'Spain': ['Madrid', 'Barcelona', 'Valencia', 'Seville'],
+};
+
+const CITY_TIMEZONES: Record<string, string> = {
+  'New York': 'America/New_York', 'Los Angeles': 'America/Los_Angeles', 'Chicago': 'America/Chicago', 'Houston': 'America/Chicago',
+  'Toronto': 'America/Toronto', 'Vancouver': 'America/Vancouver', 'Montreal': 'America/Toronto', 'Calgary': 'America/Edmonton',
+  'Sydney': 'Australia/Sydney', 'Melbourne': 'Australia/Melbourne', 'Brisbane': 'Australia/Brisbane', 'Perth': 'Australia/Perth',
+  'São Paulo': 'America/Sao_Paulo', 'Rio de Janeiro': 'America/Sao_Paulo', 'Brasília': 'America/Sao_Paulo', 'Salvador': 'America/Bahia',
+  'Beijing': 'Asia/Shanghai', 'Shanghai': 'Asia/Shanghai', 'Guangzhou': 'Asia/Shanghai', 'Shenzhen': 'Asia/Shanghai',
+  'New Delhi': 'Asia/Kolkata', 'Mumbai': 'Asia/Kolkata', 'Bengaluru': 'Asia/Kolkata', 'Kolkata': 'Asia/Kolkata',
+  'Tokyo': 'Asia/Tokyo', 'Osaka': 'Asia/Tokyo', 'Kyoto': 'Asia/Tokyo', 'Yokohama': 'Asia/Tokyo',
+  'London': 'Europe/London', 'Manchester': 'Europe/London', 'Edinburgh': 'Europe/London', 'Birmingham': 'Europe/London',
+  'Berlin': 'Europe/Berlin', 'Hamburg': 'Europe/Berlin', 'Munich': 'Europe/Berlin', 'Frankfurt': 'Europe/Berlin',
+  'Paris': 'Europe/Paris', 'Lyon': 'Europe/Paris', 'Marseille': 'Europe/Paris', 'Toulouse': 'Europe/Paris',
+  'Johannesburg': 'Africa/Johannesburg', 'Cape Town': 'Africa/Johannesburg', 'Durban': 'Africa/Johannesburg', 'Pretoria': 'Africa/Johannesburg',
+  'Mexico City': 'America/Mexico_City', 'Guadalajara': 'America/Mexico_City', 'Monterrey': 'America/Monterrey', 'Cancún': 'America/Cancun',
+  'Moscow': 'Europe/Moscow', 'Saint Petersburg': 'Europe/Moscow', 'Novosibirsk': 'Asia/Novosibirsk', 'Yekaterinburg': 'Asia/Yekaterinburg',
+  'Rome': 'Europe/Rome', 'Milan': 'Europe/Rome', 'Naples': 'Europe/Rome', 'Turin': 'Europe/Rome',
+  'Madrid': 'Europe/Madrid', 'Barcelona': 'Europe/Madrid', 'Valencia': 'Europe/Madrid', 'Seville': 'Europe/Madrid',
+};
+
+const COMPARISON_CITIES = [
+  ['Los Angeles', 'America/Los_Angeles'], ['New York', 'America/New_York'], ['London', 'Europe/London'],
+  ['Paris', 'Europe/Paris'], ['Tokyo', 'Asia/Tokyo'], ['Sydney', 'Australia/Sydney'],
+] as const;
+
+function formatDifference(minutes: number): string {
+  const sign = minutes >= 0 ? '+' : '-';
+  const absolute = Math.abs(minutes);
+  const hours = Math.floor(absolute / 60);
+  const mins = absolute % 60;
+  return `${sign}${hours}${mins ? `h ${mins}m` : 'h'}`;
+}
 
 export const CountryPage: React.FC = () => {
   const { slug }    = useParams<{ slug: string }>();
@@ -67,6 +116,28 @@ export const CountryPage: React.FC = () => {
   const related = COUNTRIES
     .filter(c => c.continent === country.continent && c.slug !== country.slug)
     .slice(0, 8);
+  const cityNames = CITY_MAP[country.name] ?? [country.capital];
+  const cityTimes = cityNames.map(name => ({
+    name,
+    timezone: CITY_TIMEZONES[name] ?? country.timezone,
+    time: getTimeInTimezone(CITY_TIMEZONES[name] ?? country.timezone),
+  }));
+  const countryOffset = getNumericOffsetMinutes(country.timezone);
+  const comparisons = COMPARISON_CITIES.map(([name, timezone]) => ({
+    name,
+    difference: formatDifference(countryOffset - getNumericOffsetMinutes(timezone)),
+  }));
+  const regionDescription = country.continent === 'Europe'
+    ? 'European countries commonly coordinate around Central, Western, or Eastern European time, with seasonal clock changes in many locations.'
+    : country.continent === 'Asia'
+      ? 'Asia spans a wide range of offsets, and many countries use one official time across a large area even when the sun reaches noon at different moments.'
+      : country.continent === 'North America'
+        ? 'North American timekeeping can vary across broad east–west distances, with regional rules and daylight-saving policies affecting the displayed offset.'
+        : country.continent === 'Oceania'
+          ? 'Oceania includes island nations and territories spread across several offsets, so nearby places may still have different local dates and times.'
+          : country.continent === 'South America'
+            ? 'South American time zones follow the continent’s longitudes, while seasonal clock policies can differ between neighboring countries.'
+            : 'The local offset reflects this country’s adopted civil-time rules and its position relative to the UTC reference meridian.';
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] pt-20">
@@ -142,19 +213,64 @@ export const CountryPage: React.FC = () => {
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* SEO Content block */}
-        <section className="mb-10 p-6 rounded-2xl border border-white/10 bg-white/5">
+        {/* Country time guide */}
+        <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
           <h2 className="text-white font-bold text-xl mb-3">About Time in {country.name}</h2>
-          <p className="text-white/50 leading-relaxed">
-            {country.name} currently observes the <strong className="text-white">{country.timezone}</strong> timezone,
-            which is <strong className="text-cyan-400">{utcOffset}</strong> from Coordinated Universal Time (UTC).
-            The capital city, <strong className="text-white">{country.capital}</strong>, serves as the reference point
-            for official local time. {isDay ? 'It is currently daytime' : 'It is currently nighttime'} in {country.name}.
+          <p className="text-white/60 leading-relaxed">
+            {country.name} uses <strong className="text-white">{country.timezone}</strong> for the local time shown here.
+            Its current offset is <strong className="text-cyan-400">{utcOffset}</strong> from Coordinated Universal Time (UTC),
+            with {country.capital} used as the country reference city in this guide. {regionDescription}
           </p>
-          <p className="text-white/50 leading-relaxed mt-3">
-            Use WorldClock.live to track the exact current time in {country.name} with millisecond precision.
-            Our live clocks update 60 times per second using your device's high-resolution timer for maximum accuracy.
+          <p className="text-white/60 leading-relaxed mt-3">
+            The displayed offset is calculated from the project&apos;s live timezone data, so it reflects daylight-saving changes
+            when the region observes them. {isDay ? 'It is currently daytime' : 'It is currently nighttime'} in {country.name}.
           </p>
+        </section>
+
+        <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
+          <h2 className="text-white font-bold text-xl mb-4">Major Cities and Their Current Times</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {cityTimes.map(city => (
+              <div key={city.name} className="p-4 rounded-xl border border-white/10 bg-black/10">
+                <div className="text-white font-semibold">{city.name}</div>
+                <div className="text-cyan-400 font-mono text-lg mt-2">{city.time.hours}:{city.time.minutes}:{city.time.seconds}</div>
+                <div className="text-white/40 text-xs mt-1">{getUTCOffset(city.timezone)} · live local time</div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
+          <h2 className="text-white font-bold text-xl mb-4">Time Difference From Major Cities</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {comparisons.map(item => (
+              <div key={item.name} className="flex items-center justify-between gap-3 p-3 rounded-xl border border-white/10">
+                <span className="text-white/70 text-sm">{item.name}</span>
+                <span className="text-cyan-400 font-mono font-bold">{item.difference}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-white/40 text-xs mt-3">Positive values mean {country.name} is ahead of the comparison city; values are live and can change with daylight-saving rules.</p>
+        </section>
+
+        <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
+          <h2 className="text-white font-bold text-xl mb-3">Planning a Call or Meeting</h2>
+          <p className="text-white/60 leading-relaxed">
+            Start with the live clock above, then compare the time in each participant&apos;s city before sending an invitation.
+            For recurring meetings, check the difference again near daylight-saving transitions because one location may change its
+            offset while another does not. A practical approach is to choose overlapping working hours, state the time zone in the
+            invitation, and include the calendar date so a meeting near midnight cannot be misunderstood.
+          </p>
+        </section>
+
+        <section className="mb-10 p-6 rounded-2xl border border-white/10 bg-white/5">
+          <h2 className="text-white font-bold text-xl mb-3">Country Time Zone Facts</h2>
+          <ul className="list-disc pl-5 space-y-2 text-white/60 leading-relaxed">
+            <li>{country.name}&apos;s project timezone identifier is <strong className="text-white">{country.timezone}</strong>.</li>
+            <li>The live offset currently resolves to <strong className="text-cyan-400">{utcOffset}</strong>, including any seasonal rule active today.</li>
+            <li>{country.name} is listed in the <strong className="text-white">{country.continent}</strong> region, where neighboring countries may use different civil-time rules.</li>
+            <li>The country reference city in this dataset is <strong className="text-white">{country.capital}</strong>.</li>
+          </ul>
         </section>
 
         <AdSlotComponent position="mid-page" index={0} className="mb-8" />
