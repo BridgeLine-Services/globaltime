@@ -131,7 +131,7 @@ export function OnThisDayPage() {
 
 
   useSEO({
-    title: `On This Day, ${viewDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — World History Facts | World Clock`,
+    title: `On This Day, ${viewDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} — World History Facts | GlobalTime`,
     description: `Discover what happened on this day in history and fascinating facts about what\'s happening around the world right now, hour by hour.`,
     canonical: `${SITE}/on-this-day`,
     structuredData: {
@@ -140,7 +140,7 @@ export function OnThisDayPage() {
       'name': 'On This Day in History — World Facts',
       'description': 'Discover what happened on this day in history and fascinating facts about what\'s happening around the world right now.',
       'url': `${SITE}/on-this-day`,
-      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'World Clock' },
+      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'GlobalTime' },
       'breadcrumb': {
         '@type': 'BreadcrumbList',
         'itemListElement': [

@@ -45,7 +45,7 @@ export const CollectionsPage: React.FC = () => {
   useEffect(() => { checkExpiry(); }, [checkExpiry]);
 
   useSEO({
-    title: 'Trinket Collections — Global Treasure Hunt | World Clock',
+    title: 'Trinket Collections — Global Treasure Hunt | GlobalTime',
     description: 'Track your global treasure hunt progress. Find hidden trinkets in countries around the world, claim your collection, and compete on the leaderboard.',
     canonical: 'https://globaltime-pi.vercel.app/collections',
   });

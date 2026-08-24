@@ -41,7 +41,7 @@ export const AdminPanel: React.FC = () => {
             </div>
           </div>
           <h1 className="text-white font-bold text-xl text-center mb-2">Admin Access</h1>
-          <p className="text-white/40 text-sm text-center mb-6">WorldClock.live Control Panel</p>
+          <p className="text-white/40 text-sm text-center mb-6">GlobalTime Control Panel</p>
           <div className="relative mb-4">
             <input
               type={showPw ? 'text' : 'password'}

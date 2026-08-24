@@ -5,8 +5,8 @@ import { useSEO } from '../hooks/useSEO';
 import { AdSlotComponent } from '../components/AdSlot';
 
 const SITE = 'https://globaltime-pi.vercel.app';
-const BRAND = 'World Clock';
-const EMAIL = 'privacy@worldclock.live';
+const BRAND = 'GlobalTime';
+const EMAIL = 'contact@globaltime-pi.vercel.app';
 const UPDATED = 'June 9, 2026';
 
 interface Section {
@@ -260,17 +260,17 @@ function PrivacySettingsPanel() {
 
 export function LegalPage() {
   useSEO({
-    title: 'Legal, Privacy & Terms | World Clock',
-    description: 'World Clock legal information including Privacy Policy, Terms & Conditions, Advertising Policy, Disclaimer, Link Policy, Do Not Sell My Info, and Privacy Settings.',
+    title: 'Legal, Privacy & Terms | GlobalTime',
+    description: 'GlobalTime legal information including Privacy Policy, Terms & Conditions, Advertising Policy, Disclaimer, Link Policy, Do Not Sell My Info, and Privacy Settings.',
     canonical: `${SITE}/legal`,
     noindex: false,
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
       'name': 'Legal — Privacy Policy, Terms & Advertising',
-      'description': 'Privacy policy, terms of service, advertising policy, and disclaimer for World Clock.',
+      'description': 'Privacy policy, terms of service, advertising policy, and disclaimer for GlobalTime.',
       'url': `${SITE}/legal`,
-      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'World Clock' },
+      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'GlobalTime' },
       'breadcrumb': {
         '@type': 'BreadcrumbList',
         'itemListElement': [
