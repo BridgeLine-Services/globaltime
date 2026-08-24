@@ -201,6 +201,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
 
   const { isFound, claimTrinket, checkExpiry } = useTreasureStore();
   const [activeTrinketCountry, setActiveTrinketCountry] = useState<string | null>(null);
+  const [webglError, setWebglError] = useState(false);
 
   useEffect(() => { checkExpiry(); }, [checkExpiry]);
 
@@ -211,8 +212,18 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     const W = container.clientWidth  || 600;
     const H = container.clientHeight || 600;
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // Renderer — with WebGL availability check
+    let renderer: THREE.WebGLRenderer;
+    try {
+      const testCanvas = document.createElement('canvas');
+      const testCtx = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+      if (!testCtx) throw new Error('WebGL not supported');
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    } catch (e) {
+      console.warn('WebGL unavailable — globe will not render:', e);
+      setWebglError(true);
+      return;
+    }
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
     renderer.setClearColor(0x000000, 0);
@@ -848,6 +859,19 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const tooltipTop = tooltip
     ? Math.max(Math.min(tooltip.y - 130, (mountRef.current?.clientHeight ?? 400) - 220), 8)
     : 0;
+
+  if (webglError) {
+    return (
+      <div className="relative w-full h-full flex flex-col items-center justify-center text-center p-6">
+        <div className="text-5xl mb-3">🌐</div>
+        <p className="text-white/60 text-sm max-w-xs">
+          Interactive globe requires WebGL support. Browse our{' '}
+          <a href="/world" className="text-cyan-400 hover:underline">World Clock</a>{' '}
+          page for all country times.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full h-full select-none" style={{ touchAction: 'none' }}>

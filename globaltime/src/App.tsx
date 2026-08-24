@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -51,8 +51,24 @@ const AdminPanel    = lazy(() => import('./pages/AdminPanel').then(m => ({ defau
 
 const GameFallback = () => (
   <div className="min-h-screen bg-[#0a0a1a] pt-24 flex items-center justify-center">
-    <div className="text-white/40 text-sm animate-pulse">Loading game…</div>
+    <div className="text-white/40 text-sm animate-pulse">Loading…</div>
   </div>
+);
+
+const NotFoundPage = () => (
+  <main className="min-h-screen bg-[#0a0a1a] pt-24 px-4 pb-20 flex flex-col items-center justify-center text-center">
+    <div className="text-6xl mb-4">🌍</div>
+    <h1 className="text-3xl font-bold text-white mb-3">Page Not Found</h1>
+    <p className="text-white/50 text-sm max-w-md mb-8">
+      The page you're looking for doesn't exist or may have been moved. Try one of our popular pages below.
+    </p>
+    <div className="flex flex-wrap gap-3 justify-center">
+      <Link to="/" className="px-5 py-2.5 rounded-xl bg-cyan-400/20 border border-cyan-400/40 text-cyan-400 font-medium hover:bg-cyan-400/30 transition-all text-sm">Home</Link>
+      <Link to="/world" className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 font-medium hover:bg-white/10 transition-all text-sm">World Clock</Link>
+      <Link to="/converter" className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 font-medium hover:bg-white/10 transition-all text-sm">Converter</Link>
+      <Link to="/guides" className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 font-medium hover:bg-white/10 transition-all text-sm">Guides</Link>
+    </div>
+  </main>
 );
 
 export default function App() {
@@ -91,8 +107,6 @@ export default function App() {
           <Route path="/games/quiz"       element={<Suspense fallback={<GameFallback />}><TimezoneQuiz /></Suspense>} />
           <Route path="/games/snake"      element={<Suspense fallback={<GameFallback />}><SnakeGame /></Suspense>} />
           <Route path="/games/color"      element={<Suspense fallback={<GameFallback />}><ColorMatch /></Suspense>} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/games/mathblitz"     element={<Suspense fallback={<GameFallback />}><MathBlitz /></Suspense>} />
           <Route path="/games/flagquiz"       element={<Suspense fallback={<GameFallback />}><FlagQuiz /></Suspense>} />
           <Route path="/games/capitals"       element={<Suspense fallback={<GameFallback />}><CapitalsQuiz /></Suspense>} />
@@ -104,8 +118,11 @@ export default function App() {
           <Route path="/games/countdown"      element={<Suspense fallback={<GameFallback />}><CountdownTimer /></Suspense>} />
           <Route path="/games/minesweeper"    element={<Suspense fallback={<GameFallback />}><Minesweeper /></Suspense>} />
 
-          {/* Other pages */}
+          {/* Blog */}
           <Route path="/blog"              element={<BlogPage />} />
+          <Route path="/blog/:slug"        element={<BlogArticlePage />} />
+
+          {/* Other pages */}
           <Route path="/legal"             element={<LegalPage />} />
           <Route path="/weather"           element={<WeatherPage />} />
           <Route path="/on-this-day"       element={<OnThisDayPage />} />
@@ -116,6 +133,9 @@ export default function App() {
 
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"      element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
+
+          {/* 404 catch-all */}
+          <Route path="*"                  element={<NotFoundPage />} />
         </Routes>
         </main>
         <Footer />

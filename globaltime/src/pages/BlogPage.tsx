@@ -79,7 +79,7 @@ function PostModal({ post, onClose }: { post: BlogPost; onClose: () => void }) {
             )}
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight mb-3">{post.title}</h1>
+          <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight mb-3">{post.title}</h2>
 
           <div className="flex items-center gap-3 text-xs text-white/40 mb-6">
             <span className="flex items-center gap-1"><Clock size={11} /><TimeAgo ts={post.publishedAt} /></span>

@@ -1118,5 +1118,23 @@
     <priority>0.6</priority>
     <lastmod>2026-08-24</lastmod>
   </url>
+  <url>
+    <loc>https://globaltime-pi.vercel.app/sky</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2026-08-24</lastmod>
+  </url>
+  <url>
+    <loc>https://globaltime-pi.vercel.app/storms</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+    <lastmod>2026-08-24</lastmod>
+  </url>
+  <url>
+    <loc>https://globaltime-pi.vercel.app/collections</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.4</priority>
+    <lastmod>2026-08-24</lastmod>
+  </url>
 
 </urlset>
