@@ -8,6 +8,7 @@ import { WorldClockPage } from './pages/WorldClockPage';
 import { CountryPage } from './pages/CountryPage';
 import { GamesPage } from './pages/GamesPage';
 import { BlogPage } from './pages/BlogPage';
+import { BlogArticlePage } from './pages/BlogArticlePage';
 import { LegalPage } from './pages/LegalPage';
 import { WeatherPage } from './pages/WeatherPage';
 import { OnThisDayPage } from './pages/OnThisDayPage';
@@ -72,6 +73,7 @@ export default function App() {
           <Route path="/games/snake"      element={<Suspense fallback={<GameFallback />}><SnakeGame /></Suspense>} />
           <Route path="/games/color"      element={<Suspense fallback={<GameFallback />}><ColorMatch /></Suspense>} />
           <Route path="/blog" element={<BlogPage />} />
+          <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/games/mathblitz"     element={<Suspense fallback={<GameFallback />}><MathBlitz /></Suspense>} />
           <Route path="/games/flagquiz"       element={<Suspense fallback={<GameFallback />}><FlagQuiz /></Suspense>} />
           <Route path="/games/capitals"       element={<Suspense fallback={<GameFallback />}><CapitalsQuiz /></Suspense>} />
