@@ -9,9 +9,8 @@ export const Footer: React.FC = () => {
   return (
     <footer className="border-t border-white/10 bg-[#050510]/80 mt-16 pt-10 pb-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="mb-8">
           <AdSlotComponent position="footer" index={0} className="h-16 flex items-center" />
-          <AdSlotComponent position="footer" index={1} className="h-16 flex items-center" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
@@ -22,7 +21,7 @@ export const Footer: React.FC = () => {
               <span className="text-white font-bold">WorldClock.live</span>
             </div>
             <p className="text-white/60 text-sm leading-relaxed">
-              Real-time world clocks with millisecond precision. Every country on Earth, live.
+              Live local time across the world. Every country on Earth, ready to explore.
             </p>
           </div>
           <div>

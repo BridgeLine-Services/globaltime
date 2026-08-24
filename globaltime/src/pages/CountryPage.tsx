@@ -273,8 +273,6 @@ export const CountryPage: React.FC = () => {
           </ul>
         </section>
 
-        <AdSlotComponent position="mid-page" index={0} className="mb-8" />
-
         {/* Related Countries */}
         {related.length > 0 && (
           <section>
@@ -290,7 +288,6 @@ export const CountryPage: React.FC = () => {
           </section>
         )}
 
-        <AdSlotComponent position="mid-page" index={1} className="mt-8" />
       </div>
     </div>
   );

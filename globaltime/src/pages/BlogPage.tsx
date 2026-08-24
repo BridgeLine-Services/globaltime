@@ -245,7 +245,6 @@ export const BlogPage: React.FC = () => {
               ))}
             </div>
 
-            <AdSlotComponent position="sidebar" index={0} className="mb-8" />
           </>
         )}
       </div>

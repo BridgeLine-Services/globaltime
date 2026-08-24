@@ -56,11 +56,6 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#0a0a1a]">
-      {/* Header Ad */}
-      <div className="pt-20 px-4 max-w-7xl mx-auto">
-        <AdSlotComponent position="header" index={0} className="mb-2" />
-      </div>
-
       {/* Hero Section */}
       <section className="relative overflow-hidden min-h-screen flex flex-col items-center justify-center px-4">
         {/* Background */}
@@ -198,9 +193,6 @@ export const HomePage: React.FC = () => {
           </div>
         </section>
 
-        {/* Mid-page Ad */}
-        <AdSlotComponent position="mid-page" index={0} className="mb-6" />
-
         {/* Games Section */}
         <section className="mb-16">
           <div className="flex items-center justify-between mb-6">
@@ -235,9 +227,6 @@ export const HomePage: React.FC = () => {
             ))}
           </div>
         </section>
-
-        {/* Mid-page Ad 2 */}
-        <AdSlotComponent position="mid-page" index={1} className="mb-10" />
 
         {/* All Countries Quick Grid */}
         <section className="mb-16">

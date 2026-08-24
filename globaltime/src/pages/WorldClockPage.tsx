@@ -66,8 +66,6 @@ export const WorldClockPage: React.FC = () => {
           ))}
         </div>
 
-        <AdSlotComponent position="mid-page" index={0} className="mb-6" />
-
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-10">
           {filtered.map((country, i) => (
             <motion.div
@@ -81,8 +79,6 @@ export const WorldClockPage: React.FC = () => {
           ))}
         </div>
 
-        <AdSlotComponent position="mid-page" index={1} className="mb-6" />
-        <AdSlotComponent position="sidebar" index={0} className="mb-4" />
       </div>
     </div>
   );
