@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy } from 'react';
+import React, { Component, type ErrorInfo, useState, Suspense, lazy } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Globe, Zap, Gamepad2, TrendingUp, ArrowRight } from 'lucide-react';
@@ -11,6 +11,36 @@ import { useSEO } from '../hooks/useSEO';
 import { type Country } from '../data/countries';
 
 const Globe3D = lazy(() => import('../components/Globe3D').then(m => ({ default: m.Globe3D })));
+
+class GlobeErrorBoundary extends Component<React.PropsWithChildren, { hasError: boolean }> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('Interactive globe unavailable:', error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="h-full w-full flex items-center justify-center rounded-3xl border border-cyan-400/20 bg-[#0d0d2b]/80 p-8 text-center">
+          <div className="max-w-sm">
+            <Globe size={48} className="mx-auto mb-4 text-cyan-400/60" aria-hidden="true" />
+            <h2 className="text-xl font-bold text-white">World clock, without the globe</h2>
+            <p className="mt-3 text-sm leading-relaxed text-white/50">
+              The interactive globe is not available in this browser, but the live local-time clocks and country search are ready to use.
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}
 
 const FEATURED_COUNTRIES = ['united-states', 'japan', 'united-kingdom', 'germany', 'australia', 'india', 'brazil', 'singapore'];
 
@@ -47,7 +77,7 @@ export const HomePage: React.FC = () => {
           <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }}>
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 text-xs font-medium mb-6">
               <div className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              LIVE — Updated every millisecond
+              LIVE — Live local time
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-4">
@@ -61,7 +91,7 @@ export const HomePage: React.FC = () => {
             </h1>
 
             <p className="text-white/50 text-lg mb-8 leading-relaxed max-w-xl">
-              The world's most precise global time platform. Millisecond accuracy, interactive 3D globe, and 150+ countries live.
+              A clear way to check live local time around the world, with an interactive 3D globe, country search, and clocks for 150+ countries.
             </p>
 
             <SearchBar onSelect={setSelectedCountry} />
@@ -90,25 +120,47 @@ export const HomePage: React.FC = () => {
             className="relative h-[500px] lg:h-[600px]"
           >
             <div className="absolute inset-0 rounded-3xl overflow-hidden">
-              <Suspense fallback={
-                <div className="w-full h-full flex items-center justify-center">
-                  <div className="w-48 h-48 rounded-full border border-cyan-400/30 animate-spin-slow flex items-center justify-center">
-                    <Globe size={48} className="text-cyan-400/50 animate-pulse" />
+              <GlobeErrorBoundary>
+                <Suspense fallback={
+                  <div className="w-full h-full flex items-center justify-center rounded-3xl border border-cyan-400/20 bg-[#0d0d2b]/60" aria-label="Loading interactive globe">
+                    <div className="w-48 h-48 rounded-full border border-cyan-400/30 animate-spin-slow flex items-center justify-center">
+                      <Globe size={48} className="text-cyan-400/50 animate-pulse" aria-hidden="true" />
+                    </div>
                   </div>
-                </div>
-              }>
-                <Globe3D
-                  countries={COUNTRIES}
-                  selectedCountry={selectedCountry}
-                  onCountrySelect={setSelectedCountry}
-                />
-              </Suspense>
+                }>
+                  <Globe3D
+                    countries={COUNTRIES}
+                    selectedCountry={selectedCountry}
+                    onCountrySelect={setSelectedCountry}
+                  />
+                </Suspense>
+              </GlobeErrorBoundary>
             </div>
           </motion.div>
         </div>
       </section>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section id="understanding-world-time" className="mx-auto max-w-4xl border-y border-white/10 py-16" aria-labelledby="understanding-world-time-title">
+          <h2 id="understanding-world-time-title" className="text-3xl font-bold text-white md:text-4xl">Understanding World Time</h2>
+          <div className="mt-6 space-y-5 text-base leading-7 text-white/65">
+            <p>A time zone is a geographic region that observes the same standard time. The idea makes it possible for clocks to follow the position of the sun while also giving communities a shared schedule for work, school, transport, and daily life. Time zones are often described as an offset from Coordinated Universal Time, but their real boundaries follow national borders, coastlines, and local decisions rather than perfectly straight lines.</p>
+            <p>UTC, or Coordinated Universal Time, is the international reference used to coordinate clocks around the world. It is based on highly stable atomic time and is kept aligned with Earth&apos;s rotation. You can think of UTC as the starting point for every offset: a location at UTC+1 is one hour ahead of UTC, while UTC−5 is five hours behind. UTC does not belong to one country, and it does not change for daylight saving time. Local clocks may move seasonally, but UTC remains the common reference underneath.</p>
+            <p>Countries use different time zones because the Earth rotates and different longitudes face the sun at different moments. Historically, towns set time by local solar noon, which became impractical once railways, telegraphs, aviation, and international trade connected distant places. Standardized zones made timetables and communication manageable. Governments then adapted those zones to practical and political needs, so one country may choose to share a clock with a neighboring region even when its geography suggests another offset.</p>
+            <p>Daylight saving time is a seasonal clock change used in some places to extend evening daylight during part of the year. A region typically moves clocks forward by one hour in spring and returns to standard time in autumn. It is not observed everywhere, and the dates can differ between countries. Some areas have stopped using it, while others change their rules regularly. That is why a meeting time that works in January may shift relative to another city in July, even when neither location has moved.</p>
+            <p>Some countries and territories use unusual UTC offsets, including half-hour and quarter-hour differences. These offsets can reflect historical administration, regional identity, or a desire to align working hours with nearby economies and daylight patterns. India uses UTC+5:30, Nepal uses UTC+5:45, and parts of Australia use offsets that include a half hour. International date line decisions also create surprising cases: two places can be geographically close while showing different calendar days.</p>
+            <p>WorldClock.live helps turn those rules into an easy comparison. Search for a country to see its current local time, compare several destinations before arranging a call, and use the globe as a visual way to understand where day and night are falling. The live clocks keep the information practical while time-zone rules, seasonal changes, and unusual offsets stay in the background. Whether you are coordinating across offices, checking in with family, or planning a trip, a clear world clock gives you a shared point of reference.</p>
+          </div>
+        </section>
+
+        <section id="how-to-use-worldclock" className="mx-auto max-w-4xl py-16" aria-labelledby="how-to-use-worldclock-title">
+          <h2 id="how-to-use-worldclock-title" className="text-3xl font-bold text-white md:text-4xl">How to Use WorldClock.live</h2>
+          <div className="mt-6 space-y-5 text-base leading-7 text-white/65">
+            <p>Start with the country search in the main clock area. Enter a country name and select a result to focus on its live local time. You can use the world clock page to browse more destinations and compare places across continents without doing UTC-offset math yourself.</p>
+            <p>For international meetings, check each participant&apos;s location before sending an invitation. Look for reasonable working hours, account for daylight saving changes, and share the selected locations so everyone understands the reference. For travel, use the country pages to check the destination clock before departure and after arrival, helping you plan calls, transfers, and sleep around the local day.</p>
+          </div>
+        </section>
+
         {/* Header Ad 2 */}
         <AdSlotComponent position="header" index={1} className="mb-10" />
 
@@ -119,7 +171,7 @@ export const HomePage: React.FC = () => {
         >
           {[
             { icon: <Globe size={20} />, value: '150+', label: 'Countries' },
-            { icon: <Zap size={20} />, value: '<16ms', label: 'Update Rate' },
+            { icon: <Zap size={20} />, value: 'Live', label: 'Local Time' },
             { icon: <TrendingUp size={20} />, value: '24/7', label: 'Live Data' },
             { icon: <Gamepad2 size={20} />, value: '5', label: 'Mini Games' },
           ].map((stat, i) => (
