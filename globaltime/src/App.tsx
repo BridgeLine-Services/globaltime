@@ -17,6 +17,7 @@ import { AIChatbot } from './components/AIChatbot';
 import { SkyPage } from './pages/SkyPage';
 import { StormsPage } from './pages/StormsPage';
 import { CollectionsPage } from './pages/CollectionsPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 // Original games
 const ReactionGame  = lazy(() => import('./games/ReactionGame').then(m => ({ default: m.ReactionGame })));
@@ -94,6 +95,8 @@ export default function App() {
           <Route path="/collections"   element={<CollectionsPage />} />
           {/* Admin: hidden route */}
           <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </main>
         <Footer />
