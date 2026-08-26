@@ -149,8 +149,8 @@ export const SkyPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'sun' | 'moon' | 'events' | 'planets'>('sun');
 
   useSEO({
-    title: 'Sky & Space Events — Sunrise, Sunset, Moon Phases, Planets | World Clock',
-    description: 'Live sunrise & sunset times, moon phases, meteor showers, planet visibility, and solar system events — optimized for every country on Earth.',
+    title: 'Sky & Space Events — Sunrise, Sunset, Moon Phases, Planets | GlobalTime',
+    description: 'Live sunrise & sunset times, moon phases, meteor showers, planet visibility, and solar system events — optimized for 140+ countries.',
     canonical: 'https://globaltime-pi.vercel.app/sky',
   });
 

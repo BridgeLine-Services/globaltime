@@ -1,7 +1,7 @@
 {
-  "name": "World Clock",
-  "short_name": "WorldClock",
-  "description": "Live time for every country on Earth. Interactive globe, timezone explorer, and mini-games.",
+  "name": "GlobalTime",
+  "short_name": "GlobalTime",
+  "description": "Live time for 140+ countries. Time zone converter, meeting planner, interactive globe, and country time guides.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a1a",

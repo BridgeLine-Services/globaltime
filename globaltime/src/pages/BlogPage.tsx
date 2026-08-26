@@ -79,7 +79,7 @@ function PostModal({ post, onClose }: { post: BlogPost; onClose: () => void }) {
             )}
           </div>
 
-          <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight mb-3">{post.title}</h1>
+          <h2 className="text-xl sm:text-2xl font-bold text-white leading-tight mb-3">{post.title}</h2>
 
           <div className="flex items-center gap-3 text-xs text-white/40 mb-6">
             <span className="flex items-center gap-1"><Clock size={11} /><TimeAgo ts={post.publishedAt} /></span>
@@ -105,8 +105,8 @@ function PostModal({ post, onClose }: { post: BlogPost; onClose: () => void }) {
 
 export const BlogPage: React.FC = () => {
   useSEO({
-    title: 'World Stories & Facts — Culture, Science, Travel & History | World Clock',
-    description: 'WorldClock.live publishes and curates fascinating stories about world culture, history, science, travel, technology, and unusual time-related facts.',
+    title: 'World Stories & Facts — Culture, Science, Travel & History | GlobalTime',
+    description: 'Stranger than fiction, true everywhere. Dive into fascinating world stories — bizarre history, hidden science, wild travel facts, and cultural mysteries. Refreshed every 2 hours.',
     canonical: 'https://globaltime-pi.vercel.app/blog',
     structuredData: [
       {
@@ -115,7 +115,7 @@ export const BlogPage: React.FC = () => {
         'name': 'World Stories & Facts',
         'description': 'Fascinating world stories — bizarre history, hidden science, wild travel facts, and cultural mysteries.',
         'url': 'https://globaltime-pi.vercel.app/blog',
-        'isPartOf': { '@type': 'WebSite', 'url': 'https://globaltime-pi.vercel.app', 'name': 'World Clock' },
+        'isPartOf': { '@type': 'WebSite', 'url': 'https://globaltime-pi.vercel.app', 'name': 'GlobalTime' },
         'inLanguage': 'en-US',
       },
       {
@@ -152,7 +152,7 @@ export const BlogPage: React.FC = () => {
             World <span className="text-cyan-400">Stories</span>
           </h1>
           <p className="text-white/50 text-sm max-w-lg mx-auto leading-relaxed">
-            WorldClock.live publishes and curates stories about world culture, history, science, travel, technology, and unusual time-related facts.
+            GlobalTime publishes and curates stories about world culture, history, science, travel, technology, and unusual time-related facts.
           </p>
         </motion.div>
 

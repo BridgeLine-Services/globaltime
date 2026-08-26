@@ -176,8 +176,8 @@ export const StormsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'hourly' | 'daily' | 'science'>('overview');
 
   useSEO({
-    title: 'Storm Tracker & Severe Weather Alerts by Country | World Clock',
-    description: 'Live storm forecasts, severe weather alerts, CAPE/Lifted Index atmospheric analysis, and 7-day hazard outlook — for every country on Earth.',
+    title: 'Storm Tracker & Severe Weather Alerts by Country | GlobalTime',
+    description: 'Live storm forecasts, severe weather alerts, CAPE/Lifted Index atmospheric analysis, and 7-day hazard outlook — for 140+ countries.',
     canonical: 'https://globaltime-pi.vercel.app/storms',
   });
 
@@ -221,7 +221,7 @@ export const StormsPage: React.FC = () => {
             Storm <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">Tracker</span>
           </h1>
           <p className="text-white/50 max-w-xl mx-auto">
-            Live severe weather analysis, CAPE atmospheric instability index, and 7-day hazard forecasts for every country on Earth.
+            Live severe weather analysis, CAPE atmospheric instability index, and 7-day hazard forecasts for 140+ countries.
           </p>
           <div className="text-white/30 text-xs mt-2">Powered by Open-Meteo · Data refreshed every hour</div>
         </motion.div>

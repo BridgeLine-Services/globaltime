@@ -180,6 +180,12 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const lMarkersRef      = useRef<THREE.Mesh[]>([]);
   const clickSphereRef   = useRef<THREE.Mesh | null>(null);
   const trinketMeshRef   = useRef<THREE.Mesh[]>([]);
+  const countriesRef    = useRef(countries);
+  const onSelectRef     = useRef(onCountrySelect);
+
+  // Keep refs in sync with latest props
+  countriesRef.current = countries;
+  onSelectRef.current = onCountrySelect;
   const borderGroupRef   = useRef<THREE.Group | null>(null);
   const cityLightsRef    = useRef<THREE.Points | null>(null);
   const sunDirRef        = useRef<THREE.Vector3>(getSunDirection());
@@ -198,9 +204,11 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
   const [trinketPopup, setTrinketPopup] = useState<{ trinket: Trinket; x: number; y: number } | null>(null);
   const [claimedPopup, setClaimedPopup] = useState<Trinket | null>(null);
   const tooltipTimer  = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
 
   const { isFound, claimTrinket, checkExpiry } = useTreasureStore();
   const [activeTrinketCountry, setActiveTrinketCountry] = useState<string | null>(null);
+  const [webglError, setWebglError] = useState(false);
 
   useEffect(() => { checkExpiry(); }, [checkExpiry]);
 
@@ -211,8 +219,18 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     const W = container.clientWidth  || 600;
     const H = container.clientHeight || 600;
 
-    // Renderer
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    // Renderer — with WebGL availability check
+    let renderer: THREE.WebGLRenderer;
+    try {
+      const testCanvas = document.createElement('canvas');
+      const testCtx = testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl');
+      if (!testCtx) throw new Error('WebGL not supported');
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    } catch (e) {
+      console.warn('WebGL unavailable — globe will not render:', e);
+      setWebglError(true);
+      return;
+    }
     renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, window.innerWidth < 768 ? 1.5 : 2));
     renderer.setClearColor(0x000000, 0);
@@ -551,12 +569,14 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
         e.preventDefault();
         pinchRef.current = { active: true, dist: getTouchDist(e) };
         isDragging.current = false;
+        touchStartPos.current = null;
       } else {
         e.preventDefault();
         isDragging.current = true;
         movedPx.current = 0;
         prevPtr.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         velY.current = 0; velX.current = 0;
+        touchStartPos.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         if (resumeTimer.current) clearTimeout(resumeTimer.current);
         autoRotate.current = false;
         setTooltip(null); setTrinketPopup(null);
@@ -584,6 +604,76 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       if (e.touches.length < 2) pinchRef.current.active = false;
       if (e.touches.length === 0) {
         isDragging.current = false;
+        // ── Tap detection: if minimal movement, treat as a tap and raycast ──
+        if (touchStartPos.current && movedPx.current <= 10 && mountRef.current && cameraRef.current) {
+          const rect = mountRef.current.getBoundingClientRect();
+          const tapX = touchStartPos.current.x - rect.left;
+          const tapY = touchStartPos.current.y - rect.top;
+          const mouse = new THREE.Vector2(
+            (tapX / rect.width) * 2 - 1,
+            -(tapY / rect.height) * 2 + 1,
+          );
+          const ray = new THREE.Raycaster();
+          // Use a slightly larger threshold for touch
+          ray.params.Points = { threshold: 0.1 };
+          ray.setFromCamera(mouse, cameraRef.current);
+
+          // 1. Trinket markers (priority)
+          const trinketHits = trinketMeshRef.current.filter(m => m.userData.type === 'trinket');
+          if (trinketHits.length > 0) {
+            const hits = ray.intersectObjects(trinketHits, false);
+            if (hits.length > 0) {
+              const t = hits[0].object.userData.trinket as Trinket;
+              setTrinketPopup({ trinket: t, x: tapX, y: tapY });
+              setTooltip(null);
+              touchStartPos.current = null;
+              if (resumeTimer.current) clearTimeout(resumeTimer.current);
+              resumeTimer.current = setTimeout(() => { autoRotate.current = true; }, 4000);
+              return;
+            }
+          }
+
+          // 2. Landmark markers
+          if (lMarkersRef.current.length > 0) {
+            const hits = ray.intersectObjects(lMarkersRef.current, false);
+            if (hits.length > 0) {
+              const lm = hits[0].object.userData.landmark as Landmark;
+              setTooltip({ landmark: lm, x: tapX, y: tapY });
+              setTrinketPopup(null);
+              if (tooltipTimer.current) clearTimeout(tooltipTimer.current);
+              tooltipTimer.current = setTimeout(() => setTooltip(null), 6000);
+              touchStartPos.current = null;
+              if (resumeTimer.current) clearTimeout(resumeTimer.current);
+              resumeTimer.current = setTimeout(() => { autoRotate.current = true; }, 4000);
+              return;
+            }
+          }
+
+          // 3. Globe surface
+          if (clickSphereRef.current && groupRef.current) {
+            const hits = ray.intersectObject(clickSphereRef.current, false);
+            if (hits.length > 0) {
+              const g = groupRef.current;
+              const local = hits[0].point.clone()
+                .applyQuaternion(g.quaternion.clone().invert())
+                .normalize();
+              const lat = Math.asin(Math.max(-1, Math.min(1, local.y))) * (180 / Math.PI);
+              const lng = ((Math.atan2(local.z, -local.x) * (180 / Math.PI) - 180) % 360 + 360) % 360 - 180;
+
+              let closest: Country | null = null;
+              let minDist = Infinity;
+              for (const c of countriesRef.current) {
+                const d = (c.lat - lat) ** 2 + (c.lng - lng) ** 2;
+                if (d < minDist) { minDist = d; closest = c; }
+              }
+              if (closest) {
+                onSelectRef.current?.(closest);
+                setTooltip(null); setTrinketPopup(null);
+              }
+            }
+          }
+        }
+        touchStartPos.current = null;
         if (resumeTimer.current) clearTimeout(resumeTimer.current);
         resumeTimer.current = setTimeout(() => { autoRotate.current = true; }, 4000);
       }
@@ -638,7 +728,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       newMeshes.push(dot);
 
       const hit = new THREE.Mesh(
-        new THREE.SphereGeometry(0.058, 8, 8),
+        new THREE.SphereGeometry(0.085, 8, 8),
         new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.001, depthWrite: false }),
       );
       hit.position.copy(pos);
@@ -849,6 +939,19 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
     ? Math.max(Math.min(tooltip.y - 130, (mountRef.current?.clientHeight ?? 400) - 220), 8)
     : 0;
 
+  if (webglError) {
+    return (
+      <div className="relative w-full h-full flex flex-col items-center justify-center text-center p-6">
+        <div className="text-5xl mb-3">🌐</div>
+        <p className="text-white/60 text-sm max-w-xs">
+          Interactive globe requires WebGL support. Browse our{' '}
+          <a href="/world" className="text-cyan-400 hover:underline">World Clock</a>{' '}
+          page for all country times.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="relative w-full h-full select-none" style={{ touchAction: 'none' }}>
       {/* Three.js canvas mount */}
@@ -884,8 +987,10 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
 
       {/* Hints — top right */}
       <div className="absolute top-3 right-3 text-white/22 text-xs pointer-events-none text-right leading-relaxed">
-        <div>🖱 Drag · Scroll to zoom</div>
-        <div>📍 Click to explore</div>
+        <div className="hidden md:block">🖱 Drag · Scroll to zoom</div>
+        <div className="md:hidden">👆 Drag · Pinch to zoom</div>
+        <div className="hidden md:block">📍 Click to explore</div>
+        <div className="md:hidden">📍 Tap to explore</div>
         {trinkets.length > 0 && <div className="text-yellow-400/55 mt-0.5">✨ Trinkets hidden!</div>}
       </div>
 
@@ -902,12 +1007,12 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
             style={{ left: tooltipLeft, top: tooltipTop, pointerEvents: 'auto' }}
           >
             <div
-              className="rounded-2xl border bg-[#0a0a1e]/96 backdrop-blur-2xl p-4 w-60 shadow-2xl"
+              className="rounded-2xl border bg-[#0a0a1e]/96 backdrop-blur-2xl p-4 w-56 md:w-60 shadow-2xl"
               style={{ borderColor: MARKER_GLOW[tooltip.landmark.type] + '55' }}
             >
               {/* Close button */}
               <button
-                className="absolute top-2 right-2 text-white/30 hover:text-white/70 text-base leading-none p-1"
+                className="absolute top-2 right-2 text-white/30 hover:text-white/70 text-base leading-none p-2 md:p-1 touch-manipulation"
                 onClick={() => setTooltip(null)}
               >×</button>
 
@@ -950,11 +1055,11 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
             transition={{ duration: 0.18 }}
             className="absolute z-30"
             style={{
-              left: Math.min(Math.max(trinketPopup.x - 112, 8), (mountRef.current?.clientWidth ?? 400) - 240),
+              left: Math.min(Math.max(trinketPopup.x - 104, 8), (mountRef.current?.clientWidth ?? 400) - 224),
               top:  Math.max(Math.min(trinketPopup.y - 130, (mountRef.current?.clientHeight ?? 400) - 240), 8),
             }}
           >
-            <div className="rounded-2xl border border-yellow-400/40 bg-[#0a0a1e]/96 backdrop-blur-2xl p-4 w-56 shadow-2xl">
+            <div className="rounded-2xl border border-yellow-400/40 bg-[#0a0a1e]/96 backdrop-blur-2xl p-4 w-52 md:w-56 shadow-2xl">
               <div className="flex items-start gap-2.5 mb-2.5">
                 <span className="text-2xl mt-0.5">{trinketPopup.trinket.emoji}</span>
                 <div className="flex-1 min-w-0">
@@ -964,7 +1069,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
                   </div>
                 </div>
                 <button onClick={() => setTrinketPopup(null)}
-                  className="text-white/30 hover:text-white/70 text-base leading-none p-1 flex-shrink-0">×</button>
+                  className="text-white/30 hover:text-white/70 text-base leading-none p-2 md:p-1 flex-shrink-0 touch-manipulation">×</button>
               </div>
 
               {isFound(trinketPopup.trinket.id) ? (
@@ -976,7 +1081,7 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
                   </p>
                   <button
                     onClick={() => handleClaimTrinket(trinketPopup.trinket)}
-                    className="w-full py-2 rounded-xl bg-yellow-500/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold hover:bg-yellow-500/30 transition-colors"
+                    className="w-full py-3 md:py-2 rounded-xl bg-yellow-500/20 border border-yellow-400/40 text-yellow-300 text-xs font-bold hover:bg-yellow-500/30 transition-colors touch-manipulation"
                   >
                     ✨ Claim Trinket!
                   </button>

@@ -18,6 +18,12 @@ import { SkyPage } from './pages/SkyPage';
 import { StormsPage } from './pages/StormsPage';
 import { CollectionsPage } from './pages/CollectionsPage';
 import { NotFoundPage } from './pages/NotFoundPage';
+import { AboutPage } from './pages/AboutPage';
+import { ContactPage } from './pages/ContactPage';
+import { ConverterPage } from './pages/ConverterPage';
+import { MeetingPlannerPage } from './pages/MeetingPlannerPage';
+import { GuidesPage } from './pages/GuidesPage';
+import { GuideDetailPage } from './pages/GuideDetailPage';
 
 // Original games
 const ReactionGame  = lazy(() => import('./games/ReactionGame').then(m => ({ default: m.ReactionGame })));
@@ -46,9 +52,11 @@ const AdminPanel    = lazy(() => import('./pages/AdminPanel').then(m => ({ defau
 
 const GameFallback = () => (
   <div className="min-h-screen bg-[#0a0a1a] pt-24 flex items-center justify-center">
-    <div className="text-white/40 text-sm animate-pulse">Loading game…</div>
+    <div className="text-white/40 text-sm animate-pulse">Loading…</div>
   </div>
 );
+
+
 
 export default function App() {
   return (
@@ -58,23 +66,34 @@ export default function App() {
         <Analytics />
         <main id="main-content">
         <Routes>
+          {/* Core pages */}
           <Route path="/"                  element={<HomePage />} />
           <Route path="/world"             element={<WorldClockPage />} />
           <Route path="/time/:slug"        element={<CountryPage />} />
+
+          {/* Tools */}
+          <Route path="/converter"         element={<ConverterPage />} />
+          <Route path="/meeting-planner"   element={<MeetingPlannerPage />} />
+
+          {/* Guides */}
+          <Route path="/guides"            element={<GuidesPage />} />
+          <Route path="/guides/:slug"      element={<GuideDetailPage />} />
+
+          {/* About / Contact */}
+          <Route path="/about"             element={<AboutPage />} />
+          <Route path="/contact"           element={<ContactPage />} />
+
+          {/* Games */}
           <Route path="/games"             element={<GamesPage />} />
-          {/* Original */}
           <Route path="/games/reaction"   element={<Suspense fallback={<GameFallback />}><ReactionGame /></Suspense>} />
           <Route path="/games/memory"     element={<Suspense fallback={<GameFallback />}><MemoryGame /></Suspense>} />
           <Route path="/games/clicker"    element={<Suspense fallback={<GameFallback />}><ClickerGame /></Suspense>} />
           <Route path="/games/puzzle"     element={<Suspense fallback={<GameFallback />}><PuzzleGame /></Suspense>} />
           <Route path="/games/runner"     element={<Suspense fallback={<GameFallback />}><RunnerGame /></Suspense>} />
-          {/* New */}
           <Route path="/games/typing"     element={<Suspense fallback={<GameFallback />}><TypingGame /></Suspense>} />
           <Route path="/games/quiz"       element={<Suspense fallback={<GameFallback />}><TimezoneQuiz /></Suspense>} />
           <Route path="/games/snake"      element={<Suspense fallback={<GameFallback />}><SnakeGame /></Suspense>} />
           <Route path="/games/color"      element={<Suspense fallback={<GameFallback />}><ColorMatch /></Suspense>} />
-          <Route path="/blog" element={<BlogPage />} />
-          <Route path="/blog/:slug" element={<BlogArticlePage />} />
           <Route path="/games/mathblitz"     element={<Suspense fallback={<GameFallback />}><MathBlitz /></Suspense>} />
           <Route path="/games/flagquiz"       element={<Suspense fallback={<GameFallback />}><FlagQuiz /></Suspense>} />
           <Route path="/games/capitals"       element={<Suspense fallback={<GameFallback />}><CapitalsQuiz /></Suspense>} />
@@ -85,16 +104,22 @@ export default function App() {
           <Route path="/games/chronoword"     element={<Suspense fallback={<GameFallback />}><ChronoWord /></Suspense>} />
           <Route path="/games/countdown"      element={<Suspense fallback={<GameFallback />}><CountdownTimer /></Suspense>} />
           <Route path="/games/minesweeper"    element={<Suspense fallback={<GameFallback />}><Minesweeper /></Suspense>} />
-          {/* New pages */}
-          <Route path="/legal"        element={<LegalPage />} />
-          <Route path="/weather"      element={<WeatherPage />} />
-          <Route path="/on-this-day"  element={<OnThisDayPage />} />
-          <Route path="/faq"          element={<FAQPage />} />
-          <Route path="/sky"          element={<SkyPage />} />
-          <Route path="/storms"       element={<StormsPage />} />
-          <Route path="/collections"   element={<CollectionsPage />} />
+
+          {/* Blog */}
+          <Route path="/blog"              element={<BlogPage />} />
+          <Route path="/blog/:slug"        element={<BlogArticlePage />} />
+
+          {/* Other pages */}
+          <Route path="/legal"             element={<LegalPage />} />
+          <Route path="/weather"           element={<WeatherPage />} />
+          <Route path="/on-this-day"       element={<OnThisDayPage />} />
+          <Route path="/faq"               element={<FAQPage />} />
+          <Route path="/sky"               element={<SkyPage />} />
+          <Route path="/storms"            element={<StormsPage />} />
+          <Route path="/collections"       element={<CollectionsPage />} />
+
           {/* Admin: hidden route */}
-          <Route path="/x-admin-9f3a"     element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
+          <Route path="/x-admin-9f3a" element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

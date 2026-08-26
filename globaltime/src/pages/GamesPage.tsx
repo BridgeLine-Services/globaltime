@@ -75,7 +75,7 @@ function TopScore({ gameId }: { gameId: GameId }) {
 
 export const GamesPage: React.FC = () => {
   useSEO({
-    title: 'Free Browser Games — 19 Mini Games to Play Now | World Clock',
+    title: 'Free Browser Games — 19 Mini Games to Play Now | GlobalTime',
     description: '19 free mini games — reaction time, memory, typing speed, flag quiz, minesweeper, snake, and more. No download, no login, play instantly in your browser.',
     canonical: 'https://globaltime-pi.vercel.app/games',
     structuredData: [

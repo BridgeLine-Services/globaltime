@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { HelpCircle, ChevronDown, Search, Clock, Globe, Gamepad2, Cloud, Shield, Zap } from 'lucide-react';
 import { useSEO } from '../hooks/useSEO';
@@ -26,24 +26,24 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     color: '#00d4ff',
     items: [
       {
-        q: 'What is World Clock?',
-        a: 'World Clock is a free, real-time time zone website showing the exact current time in every country on Earth. We also offer an interactive 3D globe, country information, world weather forecasts, mini-games, a world blog, historical facts, and much more — all at no cost.',
+        q: 'What is GlobalTime?',
+        a: 'GlobalTime is a free, real-time time zone website showing the current time in 140+ countries and territories. We also offer an interactive 3D globe, country information, world weather forecasts, mini-games, a world blog, historical facts, and much more — all at no cost.',
       },
       {
-        q: 'Is World Clock free to use?',
+        q: 'Is GlobalTime free to use?',
         a: 'Yes, completely free. No account, no subscription, no paywall. We are supported by Google AdSense advertisements that keep the lights on.',
       },
       {
-        q: 'Does World Clock require an account or login?',
+        q: 'Does GlobalTime require an account or login?',
         a: 'No. Everything on the site works without registration. Game scores and preferences are saved locally in your browser.',
       },
       {
-        q: 'What countries and territories does World Clock cover?',
-        a: 'We cover 195+ countries and territories, including all UN member states, their overseas territories, and disputed/special administrative regions.',
+        q: 'What countries and territories does GlobalTime cover?',
+        a: 'We cover 140+ countries and territories worldwide, spanning every continent. You can browse all available countries on the World Clock page.',
       },
       {
         q: 'What languages is the site available in?',
-        a: 'The site is in English by default but can be translated into 100+ languages using the built-in language switcher powered by Google Translate.',
+        a: 'The site is currently in English. We are working on adding more languages in the future.',
       },
     ],
   },
@@ -55,14 +55,14 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     items: [
       {
         q: 'How accurate is the time displayed?',
-        a: 'Times are derived from the IANA Timezone Database and your device\'s system clock. The accuracy is generally within ±1 second of the actual local time. For millisecond accuracy, your device\'s clock must be synchronized via NTP (most modern devices do this automatically).',
+        a: 'Times are derived from the IANA Timezone Database and your device\'s system clock. The accuracy is generally within ±1 second of the actual local time. For the highest accuracy, your device\'s clock must be synchronized via NTP (most modern devices do this automatically).',
       },
       {
         q: 'Why does my clock show a different time than another world clock site?',
         a: 'Small differences (1-2 seconds) between world clock sites are normal and usually due to page load time, rendering delays, or clock synchronization differences on the server side. We display times using your local device clock, which is synchronized by your OS automatically.',
       },
       {
-        q: 'Does World Clock handle Daylight Saving Time (DST) automatically?',
+        q: 'Does GlobalTime handle Daylight Saving Time (DST) automatically?',
         a: 'Yes. We use the IANA Timezone Database (the same database used by most operating systems) which tracks all current and historical DST transitions for every timezone automatically.',
       },
       {
@@ -71,7 +71,7 @@ const FAQ_CATEGORIES: FAQCategory[] = [
       },
       {
         q: 'How do I convert between time zones?',
-        a: <span>Visit the <a href="/world" className="text-cyan-400 hover:underline">World Clock page</a>, find your target country, and compare. The time shown for each country is always live and in that country's local time. A full timezone converter feature is on our roadmap.</span>,
+        a: <span>Visit the <a href="/world" className="text-cyan-400 hover:underline">World Clock page</a>, find your target country, and compare. The time shown for each country is always live and in that country's local time. You can also use our <a href="/converter" className="text-cyan-400 hover:underline">Time Zone Converter</a> to convert any time between two time zones with automatic DST handling.</span>,
       },
     ],
   },
@@ -177,24 +177,24 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     color: '#ef4444',
     items: [
       {
-        q: 'Does World Clock collect my personal data?',
+        q: 'Does GlobalTime collect my personal data?',
         a: 'We do not collect your name, email, or payment information. We use anonymous analytics (Vercel Analytics) and Google AdSense, which may use cookies. See our full Privacy Policy for details.',
       },
       {
         q: 'Why am I seeing ads?',
-        a: 'Ads are how we keep World Clock free for everyone. We use Google AdSense to display relevant advertisements. You can manage ad personalization settings in our Privacy Settings page.',
+        a: 'Ads are how we keep GlobalTime free for everyone. We use Google AdSense to display relevant advertisements. You can manage ad personalization settings in our Privacy Settings page.',
       },
       {
         q: 'How do I opt out of personalized ads?',
         a: <span>Visit our <a href="/legal" className="text-cyan-400 hover:underline">Privacy Settings</a> page, or go directly to <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Google Ad Settings</a> to turn off personalization.</span>,
       },
       {
-        q: 'Is World Clock GDPR compliant?',
+        q: 'Is GlobalTime GDPR compliant?',
         a: 'We take GDPR compliance seriously. Fonts are self-hosted (no Google Fonts DNS calls), Google Translate is deferred, and you can manage cookie/tracking preferences in our Privacy Settings page. EU users can contact us to exercise their data rights.',
       },
       {
-        q: 'How do I contact World Clock for privacy questions?',
-        a: <span>Email us at <a href="mailto:privacy@worldclock.live" className="text-cyan-400 hover:underline">privacy@worldclock.live</a>. We respond within 48 hours.</span>,
+        q: 'How do I contact GlobalTime for privacy questions?',
+        a: <span>Email us at <a href="mailto:contact@globaltime-pi.vercel.app" className="text-cyan-400 hover:underline">contact@globaltime-pi.vercel.app</a>. We respond within 48 hours.</span>,
       },
     ],
   },
@@ -205,20 +205,20 @@ const FAQ_CATEGORIES: FAQCategory[] = [
     color: '#f97316',
     items: [
       {
-        q: 'What browsers does World Clock support?',
-        a: 'World Clock works best in Chrome, Firefox, Safari, and Edge (2020 or later). Internet Explorer is not supported. We use modern web standards including WebGL for the 3D globe.',
+        q: 'What browsers does GlobalTime support?',
+        a: 'GlobalTime works best in Chrome, Firefox, Safari, and Edge (2020 or later). Internet Explorer is not supported. We use modern web standards including WebGL for the 3D globe.',
       },
       {
         q: 'Why is the globe not showing on my device?',
         a: 'The 3D globe requires WebGL support. Most modern devices support this. Check that hardware acceleration is enabled in your browser settings (Chrome: Settings → System → Use hardware acceleration). Safari on some older iPhones may have limited WebGL support.',
       },
       {
-        q: 'Can I use World Clock offline?',
+        q: 'Can I use GlobalTime offline?',
         a: 'The site works as a Progressive Web App (PWA) — you can add it to your home screen. However, live time data and weather require an internet connection. Cached pages may load offline but times won\'t update.',
       },
       {
         q: 'How do I report a bug or suggest a feature?',
-        a: <span>Email us at <a href="mailto:privacy@worldclock.live" className="text-cyan-400 hover:underline">privacy@worldclock.live</a> with a description of the issue or your idea. We read every message.</span>,
+        a: <span>Email us at <a href="mailto:contact@globaltime-pi.vercel.app" className="text-cyan-400 hover:underline">contact@globaltime-pi.vercel.app</a> with a description of the issue or your idea. We read every message.</span>,
       },
       {
         q: 'Why is the site so fast?',
@@ -228,10 +228,23 @@ const FAQ_CATEGORIES: FAQCategory[] = [
   },
 ];
 
+// Extract plain text from React node for structured data
+function extractText(node: React.ReactNode): string {
+  if (typeof node === 'string') return node;
+  if (typeof node === 'number') return String(node);
+  if (node == null || node === false) return '';
+  if (Array.isArray(node)) return node.map(extractText).join(' ');
+  if (React.isValidElement(node)) {
+    const props = node.props as { children?: React.ReactNode };
+    return extractText(props?.children);
+  }
+  return '';
+}
+
 export function FAQPage() {
   useSEO({
-    title: 'FAQ — Frequently Asked Questions | World Clock',
-    description: 'Answers to the most common questions about World Clock — time accuracy, DST, weather data, games, the 3D globe, privacy, and more.',
+    title: 'FAQ — Frequently Asked Questions | GlobalTime',
+    description: 'Answers to the most common questions about GlobalTime — time accuracy, DST, weather data, games, the 3D globe, privacy, and more.',
     canonical: `${SITE}/faq`,
     structuredData: {
       '@context': 'https://schema.org',
@@ -240,7 +253,7 @@ export function FAQPage() {
         cat.items.map(item => ({
           '@type': 'Question',
           name: item.q,
-          acceptedAnswer: { '@type': 'Answer', text: typeof item.a === 'string' ? item.a : item.q },
+          acceptedAnswer: { '@type': 'Answer', text: typeof item.a === 'string' ? item.a : extractText(item.a) },
         }))
       ),
     },
@@ -347,7 +360,7 @@ export function FAQPage() {
           <div className="text-2xl mb-2">🤔</div>
           <p className="text-white font-medium mb-1">Still have questions?</p>
           <p className="text-white/50 text-sm mb-4">We're here to help. Shoot us an email and we'll respond within 48 hours.</p>
-          <a href="mailto:privacy@worldclock.live"
+          <a href="mailto:contact@globaltime-pi.vercel.app"
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold text-sm hover:opacity-90 transition-opacity">
             Contact Us
           </a>

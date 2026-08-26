@@ -243,7 +243,7 @@ function WeatherCard({ data, unit }: { data: WeatherData; unit: 'C' | 'F' }) {
 
 export function WeatherPage() {
   useSEO({
-    title: 'World Weather — Global Temperatures & 14-Day Forecast | World Clock',
+    title: 'World Weather — Global Temperatures & 14-Day Forecast | GlobalTime',
     description: 'Live weather conditions and 14-day forecasts for cities around the world. Current temperature, humidity, wind, UV index, hourly and daily forecasts.',
     canonical: `${SITE}/weather`,
     structuredData: {
@@ -252,7 +252,7 @@ export function WeatherPage() {
       'name': 'World Weather — Global Temperatures & 14-Day Forecast',
       'description': 'Live weather conditions and 14-day forecasts for cities around the world. Current temperature, humidity, wind, UV index, hourly and daily forecasts.',
       'url': `${SITE}/weather`,
-      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'World Clock' },
+      'isPartOf': { '@type': 'WebSite', 'url': SITE, 'name': 'GlobalTime' },
       'breadcrumb': {
         '@type': 'BreadcrumbList',
         'itemListElement': [

@@ -89,7 +89,7 @@ export const CountryPage: React.FC = () => {
   const utcOffset = country ? getUTCOffset(country.timezone) : 'UTC+00:00';
 
   useSEO(country ? {
-    title: `Current Time in ${country.name} — ${country.capital} Live Clock | World Clock`,
+    title: `Current Time in ${country.name} — ${country.capital} Live Clock | GlobalTime`,
     description: `What time is it in ${country.name} right now? Live local time in ${country.capital} — timezone ${country.timezone} (${utcOffset}), currency, population, and country details.`,
     canonical: `https://globaltime-pi.vercel.app/time/${country.slug}`,
     structuredData: [
@@ -103,7 +103,7 @@ export const CountryPage: React.FC = () => {
           '@type': 'BreadcrumbList',
           'itemListElement': [
             { '@type': 'ListItem', 'position': 1, 'name': 'Home',         'item': 'https://globaltime-pi.vercel.app/' },
-            { '@type': 'ListItem', 'position': 2, 'name': 'World Clock',  'item': 'https://globaltime-pi.vercel.app/world' },
+            { '@type': 'ListItem', 'position': 2, 'name': 'GlobalTime',  'item': 'https://globaltime-pi.vercel.app/world' },
             { '@type': 'ListItem', 'position': 3, 'name': country.name,   'item': `https://globaltime-pi.vercel.app/time/${country.slug}` },
           ],
         },
@@ -116,7 +116,7 @@ export const CountryPage: React.FC = () => {
       },
     ],
   } : {
-    title: 'Country Not Found | World Clock',
+    title: 'Country Not Found | GlobalTime',
     description: 'This country page was not found.',
     canonical: 'https://globaltime-pi.vercel.app/world',
     noindex: true,

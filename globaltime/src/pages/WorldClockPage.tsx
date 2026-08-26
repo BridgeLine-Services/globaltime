@@ -10,14 +10,14 @@ export const WorldClockPage: React.FC = () => {
   const [activeContinent, setActiveContinent] = useState('All');
 
   useSEO({
-    title: 'World Clock — Current Local Time in Every Country & Territory',
+    title: 'World Clock — Current Local Time in 140+ Countries & Territories',
     description: `Live current time for all ${COUNTRIES.length}+ countries and territories. Search any country, browse by continent, and see the exact local time — updated every second.`,
     canonical: 'https://globaltime-pi.vercel.app/world',
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      'name': 'World Clock — Current Time in Every Country',
-      'description': `Real-time clocks for ${COUNTRIES.length}+ countries, live down to the millisecond.`,
+      'name': 'World Clock — Current Time in 140+ Countries',
+      'description': `Real-time clocks for ${COUNTRIES.length}+ countries, updated every second.`,
       'url': 'https://globaltime-pi.vercel.app/world',
       'breadcrumb': {
         '@type': 'BreadcrumbList',
@@ -42,7 +42,7 @@ export const WorldClockPage: React.FC = () => {
           <h1 className="text-4xl font-black text-white mb-2">
             🌍 World <span className="text-cyan-400">Clock</span>
           </h1>
-          <p className="text-white/50">Real-time clocks for {COUNTRIES.length}+ countries, live down to the millisecond</p>
+          <p className="text-white/50">Real-time clocks for {COUNTRIES.length}+ countries, updated every second</p>
         </motion.div>
 
         <div className="mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center">

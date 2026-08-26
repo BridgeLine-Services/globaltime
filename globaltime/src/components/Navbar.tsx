@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Globe, Gamepad2, Clock, Menu, X, BookOpen, Cloud, Calendar, HelpCircle, ChevronDown, Telescope, CloudLightning, Map } from 'lucide-react';
+import { Globe, Clock, ArrowLeftRight, Users, BookOpen, Menu, X, ChevronDown, HelpCircle } from 'lucide-react';
 
 const SECRET_TAPS   = 5;
 const SECRET_WINDOW = 3000;
@@ -26,20 +26,20 @@ export const Navbar: React.FC = () => {
   }, [navigate]);
 
   const mainLinks = [
-    { to: '/',      label: 'Home',        icon: <Globe    size={16} /> },
-    { to: '/world', label: 'World Clock', icon: <Clock    size={16} /> },
-    { to: '/games', label: 'Mini Games',  icon: <Gamepad2 size={16} /> },
-    { to: '/blog',  label: 'Blog',        icon: <BookOpen size={16} /> },
-    { to: '/collections', label: 'Collections', icon: <Map size={16} /> },
+    { to: '/',           label: 'Home',           icon: <Globe           size={16} /> },
+    { to: '/world',      label: 'World Clock',    icon: <Clock           size={16} /> },
+    { to: '/converter',  label: 'Converter',      icon: <ArrowLeftRight  size={16} /> },
+    { to: '/meeting-planner', label: 'Meeting Planner', icon: <Users     size={16} /> },
+    { to: '/guides',     label: 'Guides',         icon: <BookOpen        size={16} /> },
   ];
 
   const moreLinks = [
-    { to: '/weather',     label: 'World Weather',   icon: <Cloud           size={15} /> },
-    { to: '/sky',         label: 'Sky & Space',     icon: <Telescope       size={15} /> },
-    { to: '/storms',      label: 'Storm Tracker',   icon: <CloudLightning  size={15} /> },
-    { to: '/on-this-day', label: 'On This Day',     icon: <Calendar        size={15} /> },
-    { to: '/faq',         label: 'FAQ',             icon: <HelpCircle      size={15} /> },
-    { to: '/legal',       label: 'Legal & Privacy', icon: <Globe           size={15} /> },
+    { to: '/games',      label: 'Mini Games',     icon: <Globe    size={15} /> },
+    { to: '/blog',       label: 'World Stories',  icon: <BookOpen size={15} /> },
+    { to: '/faq',        label: 'FAQ',            icon: <HelpCircle size={15} /> },
+    { to: '/about',      label: 'About',          icon: <Globe    size={15} /> },
+    { to: '/contact',    label: 'Contact',        icon: <Globe    size={15} /> },
+    { to: '/legal',      label: 'Privacy & Terms', icon: <Globe   size={15} /> },
   ];
 
   const allMobileLinks = [...mainLinks, ...moreLinks];
@@ -54,7 +54,7 @@ export const Navbar: React.FC = () => {
   const inactiveClass = 'text-white/60 hover:text-white hover:bg-white/10';
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a1a]/80 backdrop-blur-xl">
+    <nav aria-label="Main navigation" className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#0a0a1a]/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
 
         {/* Logo */}
@@ -67,7 +67,7 @@ export const Navbar: React.FC = () => {
             <Globe size={16} className="text-white" />
           </div>
           <span className="text-white font-bold text-lg">
-            World<span className="text-cyan-400">Clock</span><span className="text-purple-400">.live</span>
+            Global<span className="text-cyan-400">Time</span>
           </span>
         </Link>
 
@@ -77,7 +77,7 @@ export const Navbar: React.FC = () => {
             <Link
               key={link.to}
               to={link.to}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${loc.pathname === link.to ? activeClass : inactiveClass}`}
+              className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${loc.pathname === link.to ? activeClass : inactiveClass}`}
             >
               {link.icon}
               {link.label}
@@ -89,7 +89,7 @@ export const Navbar: React.FC = () => {
             <button
               onClick={() => setMoreOpen(o => !o)}
               onBlur={() => setTimeout(() => setMoreOpen(false), 150)}
-              className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isMoreActive ? activeClass : inactiveClass}`}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${isMoreActive ? activeClass : inactiveClass}`}
             >
               More
               <ChevronDown size={13} className={`transition-transform ${moreOpen ? 'rotate-180' : ''}`} />
@@ -115,6 +115,8 @@ export const Navbar: React.FC = () => {
         {/* Mobile hamburger */}
         <button
           className="md:hidden min-h-11 min-w-11 flex items-center justify-center text-white/60 hover:text-white transition-colors p-2"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          aria-expanded={menuOpen}
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -140,4 +142,3 @@ export const Navbar: React.FC = () => {
     </nav>
   );
 };
-

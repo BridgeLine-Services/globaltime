@@ -29,7 +29,7 @@ const LANGUAGES: Lang[] = [
 ];
 
 // ─── Personality & Knowledge ─────────────────────────────────────────────────
-const PERSONALITY = `You are Clocks, a friendly, funny, warm, human-like AI assistant built into WorldClock.live — a world clock and timezone platform. You're like a knowledgeable best friend: natural, conversational, occasionally witty, never robotic. You help with general questions, timezones, world facts, weather (when data is provided), and casual chat. Keep replies concise unless the user asks for detail. Use light humor naturally. Never say you are ChatGPT or any specific AI model — you're Clocks.`;
+const PERSONALITY = `You are Clocks, a friendly, funny, warm, human-like AI assistant built into GlobalTime — a world clock and timezone platform. You're like a knowledgeable best friend: natural, conversational, occasionally witty, never robotic. You help with general questions, timezones, world facts, weather (when data is provided), and casual chat. Keep replies concise unless the user asks for detail. Use light humor naturally. Never say you are ChatGPT or any specific AI model — you're Clocks.`;
 
 // ─── Timezone helpers ────────────────────────────────────────────────────────
 function formatTimeInZone(tz: string): string {
@@ -171,7 +171,7 @@ function builtInResponse(input: string): string {
   if (/hello|hi |hey|good morning|good evening/.test(low))
     return "Hey! 👋 Great to see you. I'm Clocks — your friendly world time assistant. Ask me about timezones, world facts, weather, or just chat. What's on your mind?";
   if (/who are you|what are you/.test(low))
-    return "I'm Clocks! 🕐 Your AI companion on WorldClock.live. I know my timezones, world facts, and how to hold a decent conversation. Think of me as that friend who's weirdly obsessed with geography and never sleeps.";
+    return "I'm Clocks! 🕐 Your AI companion on GlobalTime. I know my timezones, world facts, and how to hold a decent conversation. Think of me as that friend who's weirdly obsessed with geography and never sleeps.";
   if (/thank/.test(low))
     return "Anytime! 😊 That's literally what I'm here for. Ask me anything else!";
   if (/joke/.test(low))

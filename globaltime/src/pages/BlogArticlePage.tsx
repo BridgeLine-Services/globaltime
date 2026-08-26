@@ -32,7 +32,7 @@ export const BlogArticlePage: React.FC = () => {
       '@context': 'https://schema.org', '@type': 'Article', headline: post.title,
       description: post.excerpt, datePublished: new Date(post.publishedAt).toISOString(),
       mainEntityOfPage: `${SITE_URL}/blog/${slug}`, articleSection: post.category,
-      inLanguage: 'en-US', publisher: { '@type': 'Organization', name: 'WorldClock.live', url: SITE_URL },
+      inLanguage: 'en-US', publisher: { '@type': 'Organization', name: 'GlobalTime', url: SITE_URL },
     } : undefined,
   });
 

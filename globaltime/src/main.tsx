@@ -16,7 +16,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
   }
 
   componentDidCatch(error: Error, info: { componentStack: string }) {
-    console.error('[WorldClock] Uncaught render error:', error, info.componentStack);
+    console.error('[GlobalTime] Uncaught render error:', error, info.componentStack);
   }
 
   render() {
