@@ -75,7 +75,7 @@ export const COUNTRIES: Country[] = [
     "slug": "argentina",
     "timezone": "America/Argentina/Buenos_Aires",
     "capital": "Buenos Aires",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -34,
     "lng": -64,
     "flag": "🇦🇷"
@@ -229,7 +229,7 @@ export const COUNTRIES: Country[] = [
     "slug": "bolivia",
     "timezone": "America/La_Paz",
     "capital": "Sucre",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -17,
     "lng": -65,
     "flag": "🇧🇴"
@@ -262,7 +262,7 @@ export const COUNTRIES: Country[] = [
     "slug": "brazil",
     "timezone": "America/Sao_Paulo",
     "capital": "Brasília",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -10,
     "lng": -55,
     "flag": "🇧🇷"
@@ -331,7 +331,7 @@ export const COUNTRIES: Country[] = [
     "continent": "Africa",
     "lat": 6,
     "lng": 12,
-    "flag": "🇨🇲"
+    "flag": "🇨���"
   },
   {
     "code": "CA",
@@ -359,7 +359,7 @@ export const COUNTRIES: Country[] = [
     "code": "CF",
     "name": "Central African Republic",
     "slug": "central-african-republic",
-    "timezone": "Africa/Accra",
+    "timezone": "Africa/Bangui",
     "capital": "Bangui",
     "continent": "Africa",
     "lat": 7,
@@ -370,7 +370,7 @@ export const COUNTRIES: Country[] = [
     "code": "TD",
     "name": "Chad",
     "slug": "chad",
-    "timezone": "Africa/Accra",
+    "timezone": "Africa/Ndjamena",
     "capital": "N'Djamena",
     "continent": "Africa",
     "lat": 15,
@@ -383,7 +383,7 @@ export const COUNTRIES: Country[] = [
     "slug": "chile",
     "timezone": "America/Santiago",
     "capital": "Santiago",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -30,
     "lng": -71,
     "flag": "🇨🇱"
@@ -405,7 +405,7 @@ export const COUNTRIES: Country[] = [
     "slug": "colombia",
     "timezone": "America/Bogota",
     "capital": "Bogotá",
-    "continent": "North America",
+    "continent": "South America",
     "lat": 4,
     "lng": -72,
     "flag": "🇨🇴"
@@ -537,7 +537,7 @@ export const COUNTRIES: Country[] = [
     "slug": "ecuador",
     "timezone": "America/Guayaquil",
     "capital": "Quito",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -2,
     "lng": -77.5,
     "flag": "🇪🇨"
@@ -568,7 +568,7 @@ export const COUNTRIES: Country[] = [
     "code": "GQ",
     "name": "Equatorial Guinea",
     "slug": "equatorial-guinea",
-    "timezone": "Africa/Accra",
+    "timezone": "Africa/Malabo",
     "capital": "Malabo",
     "continent": "Africa",
     "lat": 2,
@@ -656,7 +656,7 @@ export const COUNTRIES: Country[] = [
     "code": "GA",
     "name": "Gabon",
     "slug": "gabon",
-    "timezone": "Africa/Accra",
+    "timezone": "Africa/Libreville",
     "capital": "Libreville",
     "continent": "Africa",
     "lat": -1,
@@ -768,7 +768,7 @@ export const COUNTRIES: Country[] = [
     "slug": "guyana",
     "timezone": "America/Guyana",
     "capital": "Georgetown",
-    "continent": "North America",
+    "continent": "South America",
     "lat": 5,
     "lng": -59,
     "flag": "🇬🇾"
@@ -1494,7 +1494,7 @@ export const COUNTRIES: Country[] = [
     "slug": "paraguay",
     "timezone": "America/Asuncion",
     "capital": "Asunción",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -23,
     "lng": -58,
     "flag": "🇵🇾"
@@ -1505,7 +1505,7 @@ export const COUNTRIES: Country[] = [
     "slug": "peru",
     "timezone": "America/Lima",
     "capital": "Lima",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -10,
     "lng": -76,
     "flag": "🇵🇪"
@@ -1582,7 +1582,7 @@ export const COUNTRIES: Country[] = [
     "slug": "russia",
     "timezone": "Europe/Moscow",
     "capital": "Moscow",
-    "continent": "Europe",
+    "continent": "Asia",
     "lat": 60,
     "lng": 100,
     "flag": "🇷🇺"
@@ -1846,7 +1846,7 @@ export const COUNTRIES: Country[] = [
     "slug": "suriname",
     "timezone": "America/Paramaribo",
     "capital": "Paramaribo",
-    "continent": "North America",
+    "continent": "South America",
     "lat": 4,
     "lng": -56,
     "flag": "🇸🇷"
@@ -2036,7 +2036,7 @@ export const COUNTRIES: Country[] = [
     "continent": "Africa",
     "lat": 1,
     "lng": 32,
-    "flag": "🇺🇬"
+    "flag": "���🇬"
   },
   {
     "code": "UA",
@@ -2077,7 +2077,7 @@ export const COUNTRIES: Country[] = [
     "slug": "uruguay",
     "timezone": "America/Montevideo",
     "capital": "Montevideo",
-    "continent": "North America",
+    "continent": "South America",
     "lat": -33,
     "lng": -56,
     "flag": "🇺🇾"
@@ -2121,7 +2121,7 @@ export const COUNTRIES: Country[] = [
     "slug": "venezuela",
     "timezone": "America/Caracas",
     "capital": "Caracas",
-    "continent": "North America",
+    "continent": "South America",
     "lat": 8,
     "lng": -66,
     "flag": "🇻🇪"

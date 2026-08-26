@@ -136,7 +136,7 @@ export const CountryPage: React.FC = () => {
   const related = COUNTRIES
     .filter(c => c.continent === country.continent && c.slug !== country.slug)
     .slice(0, 8);
-  const cityNames = CITY_MAP[country.name] ?? [country.capital];
+  const cityNames = guide?.majorCities?.length ? guide.majorCities : (CITY_MAP[country.name] ?? [country.capital]);
   const cityTimes = cityNames.map(name => ({
     name,
     timezone: CITY_TIMEZONES[name] ?? country.timezone,
