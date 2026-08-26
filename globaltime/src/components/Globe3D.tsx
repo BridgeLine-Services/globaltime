@@ -838,10 +838,18 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
       cameraRef.current.position.z + e.deltaY * 0.004));
   }, []);
 
-  const onMD = useCallback((e: React.MouseEvent) => startDrag(e.clientX, e.clientY), [startDrag]);
-  const onMM = useCallback((e: React.MouseEvent) => moveDrag(e.clientX, e.clientY), [moveDrag]);
-  const onMU = useCallback(() => endDrag(), [endDrag]);
-  const onML = useCallback(() => { if (isDragging.current) endDrag(); }, [endDrag]);
+  const onPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    startDrag(e.clientX, e.clientY);
+  }, [startDrag]);
+  const onPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    moveDrag(e.clientX, e.clientY);
+  }, [moveDrag]);
+  const onPointerUp = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.currentTarget.hasPointerCapture?.(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId);
+    endDrag();
+  }, [endDrag]);
+  const onPointerCancel = useCallback(() => endDrag(), [endDrag]);
 
   // ── Zoom to selected country ────────────────────────────────────────────────
   const zoomRafRef = useRef<number>(0);
@@ -959,10 +967,10 @@ export const Globe3D: React.FC<Globe3DProps> = ({ countries, selectedCountry, on
         ref={mountRef}
         className="w-full h-full cursor-grab active:cursor-grabbing"
         style={{ touchAction: 'none' }}
-        onMouseDown={onMD}
-        onMouseMove={onMM}
-        onMouseUp={onMU}
-        onMouseLeave={onML}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerCancel}
         onClick={handleClick}
         onWheel={onWheel}
       />
