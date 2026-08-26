@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Globe, MapPin, ArrowRight } from 'lucide-react';
 import { useLiveClock } from '../hooks/useLiveClock';
@@ -9,6 +9,7 @@ import { CountryCard } from '../components/CountryCard';
 import { AdSlotComponent } from '../components/AdSlot';
 import { useAnalyticsStore } from '../stores/analyticsStore';
 import { useSEO } from '../hooks/useSEO';
+import { COUNTRY_GUIDES } from '../data/countryGuides';
 import { getUTCOffset, getNumericOffsetMinutes, getTimeInTimezone } from '../utils/time';
 
 const Globe3D = lazy(() => import('../components/Globe3D').then(m => ({ default: m.Globe3D })));
@@ -83,6 +84,7 @@ function formatDifference(minutes: number): string {
 export const CountryPage: React.FC = () => {
   const { slug }    = useParams<{ slug: string }>();
   const country     = slug ? getCountryBySlug(slug) : null;
+  const guide       = country ? COUNTRY_GUIDES[country.slug] : undefined;
   const { recordPageView } = useAnalyticsStore();
 
   // Must be called unconditionally (hooks rule) — safe because we redirect below if no country
@@ -127,7 +129,7 @@ export const CountryPage: React.FC = () => {
     if (country) recordPageView(`/time/${country.slug}`);
   }, [country?.slug]);
 
-  if (!country) return <Navigate to="/world" replace />;
+  if (!country) return <div className="min-h-screen bg-[#0a0a1a] pt-24"><div className="max-w-3xl mx-auto px-4 py-16 text-center"><h1 className="text-3xl font-bold text-white">Country not found</h1><p className="mt-3 text-white/60">That country page does not exist in GlobalTime.</p><Link to="/world" className="inline-flex mt-6 text-cyan-400 hover:text-cyan-300">Browse the world clock <ArrowRight size={16} className="ml-2" /></Link></div></div>;
 
   const { isDay } = useLiveClock(country.timezone);
 
@@ -262,6 +264,28 @@ export const CountryPage: React.FC = () => {
           </div>
           <p className="text-white/40 text-xs mt-3">Positive values mean {country.name} is ahead of the comparison city; values are live and can change with daylight-saving rules.</p>
         </section>
+
+        {guide && (
+          <>
+            <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
+              <h2 className="text-white font-bold text-xl mb-3">Time Zone Guide</h2>
+              <div className="grid sm:grid-cols-2 gap-3 mb-4 text-sm">
+                <div><span className="text-white/40">Zone name</span><p className="text-white mt-1">{guide.timezoneName}</p></div>
+                <div><span className="text-white/40">Daylight saving</span><p className="text-white mt-1">{guide.observesDST ? 'Observed in the reference zone' : 'Not observed in the reference zone'}</p></div>
+              </div>
+              <p className="text-white/60 leading-relaxed">{guide.dstInfo}</p>
+              {guide.aboutTime.map((paragraph) => <p key={paragraph} className="text-white/60 leading-relaxed mt-3">{paragraph}</p>)}
+            </section>
+            <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
+              <h2 className="text-white font-bold text-xl mb-3">Best Calling Window</h2>
+              <p className="text-white/60 leading-relaxed">{guide.bestCallTimes}</p>
+            </section>
+            <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
+              <h2 className="text-white font-bold text-xl mb-3">Country Time FAQs</h2>
+              <div className="space-y-4">{guide.faqs.map((faq) => <div key={faq.question}><h3 className="text-white font-semibold">{faq.question}</h3><p className="text-white/60 leading-relaxed mt-1">{faq.answer}</p></div>)}</div>
+            </section>
+          </>
+        )}
 
         <section className="mb-8 p-6 rounded-2xl border border-white/10 bg-white/5">
           <h2 className="text-white font-bold text-xl mb-3">Planning a Call or Meeting</h2>
