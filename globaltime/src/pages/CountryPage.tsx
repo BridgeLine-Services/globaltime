@@ -54,6 +54,24 @@ const COMPARISON_CITIES = [
   ['Paris', 'Europe/Paris'], ['Tokyo', 'Asia/Tokyo'], ['Sydney', 'Australia/Sydney'],
 ] as const;
 
+const COUNTRY_GUIDANCE: Record<string, string> = {
+  'United States': 'This page uses Eastern Time as the country reference, while the United States spans several civil time zones. Compare the listed cities when planning across the country because their offsets can differ seasonally.',
+  'Canada': 'Canada covers multiple civil time zones from the Atlantic coast to the Pacific coast. Toronto is the reference city here; use the city list for a more relevant local time when coordinating across provinces.',
+  'Australia': 'Australia spans multiple time zones and daylight-saving policies. Sydney is the reference city here, but Brisbane and Perth can show a different local time on the same date.',
+  'Russia': 'Russia spans eleven time zones. Moscow is the reference city in this guide, so use the city list when the destination is farther east than European Russia.',
+  'China': 'China uses one official national time zone, China Standard Time, even though the country spans a wide range of longitudes. Beijing, Shanghai, Guangzhou, and Shenzhen therefore share the displayed official time.',
+  'India': 'India uses one nationwide time zone, India Standard Time. New Delhi, Mumbai, Bengaluru, and Kolkata share the same official clock even though they are spread across the country.',
+  'Japan': 'Japan uses one nationwide time zone, Japan Standard Time, and does not currently observe daylight saving time. The major Japanese cities listed here therefore share the same official time.',
+  'South Africa': 'South Africa uses one nationwide standard time and does not currently observe daylight saving time. Johannesburg, Cape Town, Durban, and Pretoria therefore share the same official offset.',
+  'United Kingdom': 'The United Kingdom uses GMT in winter and British Summer Time in the warmer part of the year. The displayed offset is live, so it reflects the seasonal rule when applicable.',
+  'Mexico': 'Mexico has more than one civil time zone. Mexico City is the reference city here, while Monterrey and Cancún may follow different local rules or offsets.',
+  'Brazil': 'Brazil spans several civil time zones. São Paulo is the reference city for this page, so locations in western Brazil can have a different local date or time.',
+  'Spain': 'Mainland Spain uses Central European Time in winter and Central European Summer Time in the warmer part of the year. The Canary Islands use a different time zone.',
+  'France': 'This page uses metropolitan France and Paris as its reference. France also has overseas territories in other time zones, so the displayed clock does not represent every French territory.',
+  'Indonesia': 'Indonesia spans three official time zones. Jakarta is the reference city here; destinations in central or eastern Indonesia may be one or two hours ahead.',
+  'Chile': 'Chile has seasonal and regional time rules that can change the live offset. Santiago is the reference city used for this page, so check the destination city for travel across the country.',
+};
+
 function formatDifference(minutes: number): string {
   const sign = minutes >= 0 ? '+' : '-';
   const absolute = Math.abs(minutes);
@@ -127,17 +145,9 @@ export const CountryPage: React.FC = () => {
     name,
     difference: formatDifference(countryOffset - getNumericOffsetMinutes(timezone)),
   }));
-  const regionDescription = country.continent === 'Europe'
-    ? 'European countries commonly coordinate around Central, Western, or Eastern European time, with seasonal clock changes in many locations.'
-    : country.continent === 'Asia'
-      ? 'Asia spans a wide range of offsets, and many countries use one official time across a large area even when the sun reaches noon at different moments.'
-      : country.continent === 'North America'
-        ? 'North American timekeeping can vary across broad east–west distances, with regional rules and daylight-saving policies affecting the displayed offset.'
-        : country.continent === 'Oceania'
-          ? 'Oceania includes island nations and territories spread across several offsets, so nearby places may still have different local dates and times.'
-          : country.continent === 'South America'
-            ? 'South American time zones follow the continent’s longitudes, while seasonal clock policies can differ between neighboring countries.'
-            : 'The local offset reflects this country’s adopted civil-time rules and its position relative to the UTC reference meridian.';
+  const regionDescription = COUNTRY_GUIDANCE[country.name] ?? (
+    `${country.name} uses ${country.timezone} as the reference timezone in this guide. The country’s other cities may follow the same civil-time rule or a different regional rule, so check the destination before scheduling across borders.`
+  );
 
   return (
     <div className="min-h-screen bg-[#0a0a1a] pt-20">

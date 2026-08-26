@@ -45,6 +45,11 @@ export const Navbar: React.FC = () => {
   const allMobileLinks = [...mainLinks, ...moreLinks];
   const isMoreActive = moreLinks.some(l => loc.pathname.startsWith(l.to));
 
+  React.useEffect(() => {
+    setMenuOpen(false);
+    setMoreOpen(false);
+  }, [loc.pathname]);
+
   const activeClass = 'bg-cyan-400/20 text-cyan-400 shadow-[0_0_10px_rgba(0,212,255,0.2)]';
   const inactiveClass = 'text-white/60 hover:text-white hover:bg-white/10';
 
@@ -109,7 +114,7 @@ export const Navbar: React.FC = () => {
 
         {/* Mobile hamburger */}
         <button
-          className="md:hidden text-white/60 hover:text-white transition-colors p-2"
+          className="md:hidden min-h-11 min-w-11 flex items-center justify-center text-white/60 hover:text-white transition-colors p-2"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
           aria-expanded={menuOpen}
           onClick={() => setMenuOpen(!menuOpen)}

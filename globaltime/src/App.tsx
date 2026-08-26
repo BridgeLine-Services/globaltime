@@ -1,5 +1,5 @@
 import { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Analytics } from '@vercel/analytics/react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
@@ -17,6 +17,7 @@ import { AIChatbot } from './components/AIChatbot';
 import { SkyPage } from './pages/SkyPage';
 import { StormsPage } from './pages/StormsPage';
 import { CollectionsPage } from './pages/CollectionsPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 import { AboutPage } from './pages/AboutPage';
 import { ContactPage } from './pages/ContactPage';
 import { ConverterPage } from './pages/ConverterPage';
@@ -55,21 +56,7 @@ const GameFallback = () => (
   </div>
 );
 
-const NotFoundPage = () => (
-  <main className="min-h-screen bg-[#0a0a1a] pt-24 px-4 pb-20 flex flex-col items-center justify-center text-center">
-    <div className="text-6xl mb-4">🌍</div>
-    <h1 className="text-3xl font-bold text-white mb-3">Page Not Found</h1>
-    <p className="text-white/50 text-sm max-w-md mb-8">
-      The page you're looking for doesn't exist or may have been moved. Try one of our popular pages below.
-    </p>
-    <div className="flex flex-wrap gap-3 justify-center">
-      <Link to="/" className="px-5 py-2.5 rounded-xl bg-cyan-400/20 border border-cyan-400/40 text-cyan-400 font-medium hover:bg-cyan-400/30 transition-all text-sm">Home</Link>
-      <Link to="/world" className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 font-medium hover:bg-white/10 transition-all text-sm">World Clock</Link>
-      <Link to="/converter" className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 font-medium hover:bg-white/10 transition-all text-sm">Converter</Link>
-      <Link to="/guides" className="px-5 py-2.5 rounded-xl bg-white/5 border border-white/10 text-white/70 font-medium hover:bg-white/10 transition-all text-sm">Guides</Link>
-    </div>
-  </main>
-);
+
 
 export default function App() {
   return (
@@ -132,10 +119,9 @@ export default function App() {
           <Route path="/collections"       element={<CollectionsPage />} />
 
           {/* Admin: hidden route */}
-          <Route path="/x-admin-9f3a"      element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
-
-          {/* 404 catch-all */}
-          <Route path="*"                  element={<NotFoundPage />} />
+          <Route path="/x-admin-9f3a" element={<Suspense fallback={<GameFallback />}><AdminPanel /></Suspense>} />
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
         </main>
         <Footer />
